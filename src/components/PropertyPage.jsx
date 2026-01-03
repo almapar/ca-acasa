@@ -17,13 +17,10 @@ const PropertyPage = () => {
 
   useEffect(() => {
     if (property) {
-      // 1. Load the first image as the main one immediately
-      // We assume the naming pattern is /images/{id}_1.jpg
+      // 1. Load the first image as the main one
       const initialImage = `/images/${property.id}_1.jpg`;
       setMainImage(initialImage);
 
-      // 2. Generate the list of 6 images based on the ID
-      // Example: prop1_1.jpg, prop1_2.jpg, ..., prop1_6.jpg
       const imageList = [
         `/images/${property.id}_1.jpg`,
         `/images/${property.id}_2.jpg`,
