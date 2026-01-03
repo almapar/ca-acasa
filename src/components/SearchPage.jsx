@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import propertiesData from '../data/properties.json';
-import { FaSearch, FaTimes } from 'react-icons/fa'; // Importing icons for "Widgets" feel
+import { FaSearch, FaTimes, FaTrash, FaHeart } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
-const SearchPage = () => {
-  // 1. Initialise State for all search criteria
+// Receive props from App.jsx
+const SearchPage = ({ favorites, addFavorite, removeFavorite, clearFavorites }) => {
   const [properties, setProperties] = useState([]);
   const [filteredProperties, setFilteredProperties] = useState([]);
   
-  // Search Form State
+  // Search States
   const [type, setType] = useState('Any');
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(2000000);
@@ -17,58 +18,35 @@ const SearchPage = () => {
   const [dateAddedStart, setDateAddedStart] = useState('');
   const [dateAddedEnd, setDateAddedEnd] = useState('');
 
-  // 2. Load data on mount
   useEffect(() => {
     setProperties(propertiesData.properties);
-    setFilteredProperties(propertiesData.properties); // Show all initially
+    setFilteredProperties(propertiesData.properties);
   }, []);
 
-  // 3. Helper Function to parse the custom date format from JSON
   const parseDate = (dateObj) => {
     const months = {
       January: 0, February: 1, March: 2, April: 3, May: 4, June: 5,
       July: 6, August: 7, September: 8, October: 9, November: 10, December: 11
     };
-    // Create a JavaScript Date object
     return new Date(dateObj.year, months[dateObj.month], dateObj.day);
   };
 
-  // 4. The Main Search Logic (Crucial for 10% marks)
   const handleSearch = (e) => {
     e.preventDefault();
-
     const results = properties.filter((prop) => {
       const propDate = parseDate(prop.added);
-      
-      // Filter by Type
       const matchType = type === 'Any' || prop.type === type;
-      
-      // Filter by Price
       const matchPrice = prop.price >= Number(minPrice) && prop.price <= Number(maxPrice);
-      
-      // Filter by Bedrooms
       const matchBeds = prop.bedrooms >= Number(minBeds) && prop.bedrooms <= Number(maxBeds);
-      
-      // Filter by Postcode (First part match, e.g., "BR1")
       const matchPostcode = postcode === '' || prop.location.includes(postcode.toUpperCase());
-      
-      // Filter by Date Range
       let matchDate = true;
-      if (dateAddedStart) {
-        matchDate = matchDate && propDate >= new Date(dateAddedStart);
-      }
-      if (dateAddedEnd) {
-        matchDate = matchDate && propDate <= new Date(dateAddedEnd);
-      }
-
-      // Return true only if ALL criteria match
+      if (dateAddedStart) matchDate = matchDate && propDate >= new Date(dateAddedStart);
+      if (dateAddedEnd) matchDate = matchDate && propDate <= new Date(dateAddedEnd);
       return matchType && matchPrice && matchBeds && matchPostcode && matchDate;
     });
-
     setFilteredProperties(results);
   };
 
-  // 5. Clear Filter Function
   const handleClear = () => {
     setType('Any');
     setMinPrice(0);
@@ -81,93 +59,128 @@ const SearchPage = () => {
     setFilteredProperties(properties);
   };
 
+  // --- DRAG AND DROP HANDLERS ---
+  
+  const handleDragStart = (e, propertyId) => {
+    // Store the ID of the item being dragged
+    e.dataTransfer.setData("text/plain", propertyId);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const propertyId = e.dataTransfer.getData("text/plain");
+    // Logic: If we drop here, we ADD to favorites
+    addFavorite(propertyId);
+  };
+
+  const handleDragOver = (e) => {
+    // Necessary to allow dropping
+    e.preventDefault();
+  };
+
   return (
-    <div style={{ padding: '20px' }}>
-      <h2>Find Your Perfect Home</h2>
+    <div style={{ padding: '20px', display: 'flex', gap: '20px', flexDirection: 'column' }}>
       
-      {/* Search Form Area - Using a grid for layout */}
-      <form onSubmit={handleSearch} style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', 
-        gap: '15px', 
-        background: '#f4f4f4', 
-        padding: '20px', 
-        borderRadius: '8px'
-      }}>
+      {/* Container for Search + Favourites Sidebar */}
+      <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
         
-        {/* Type Selector */}
-        <div>
-          <label>Property Type</label>
-          <select value={type} onChange={(e) => setType(e.target.value)} style={{ width: '100%', padding: '8px' }}>
-            <option value="Any">Any</option>
-            <option value="House">House</option>
-            <option value="Flat">Flat</option>
-          </select>
+        {/* LEFT COLUMN: Search Form */}
+        <div style={{ flex: 3 }}>
+           <h2>Property Search</h2>
+           <form onSubmit={handleSearch} style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', 
+            gap: '10px', 
+            background: '#f4f4f4', 
+            padding: '15px', 
+            borderRadius: '8px'
+          }}>
+            {/* ... (Existing Inputs - keeping them brief for copy/paste safety) ... */}
+            <div><label>Type</label><select value={type} onChange={e => setType(e.target.value)} style={{width:'100%'}}><option>Any</option><option>House</option><option>Flat</option></select></div>
+            <div><label>Min Price</label><input type="number" value={minPrice} onChange={e => setMinPrice(e.target.value)} style={{width:'100%'}}/></div>
+            <div><label>Max Price</label><input type="number" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} style={{width:'100%'}}/></div>
+            <div><label>Min Beds</label><input type="number" value={minBeds} onChange={e => setMinBeds(e.target.value)} style={{width:'100%'}}/></div>
+            <div><label>Max Beds</label><input type="number" value={maxBeds} onChange={e => setMaxBeds(e.target.value)} style={{width:'100%'}}/></div>
+            <div><label>Postcode</label><input value={postcode} onChange={e => setPostcode(e.target.value)} style={{width:'100%'}}/></div>
+            <div><label>After</label><input type="date" value={dateAddedStart} onChange={e => setDateAddedStart(e.target.value)} style={{width:'100%'}}/></div>
+            <div><label>Before</label><input type="date" value={dateAddedEnd} onChange={e => setDateAddedEnd(e.target.value)} style={{width:'100%'}}/></div>
+            
+            <div style={{ gridColumn: '1 / -1', marginTop:'10px' }}>
+              <button type="submit" style={{ marginRight:'10px', padding:'8px 16px', background:'#007bff', color:'white', border:'none', borderRadius:'4px' }}>Search</button>
+              <button type="button" onClick={handleClear} style={{ padding:'8px 16px', background:'#6c757d', color:'white', border:'none', borderRadius:'4px' }}>Clear</button>
+            </div>
+          </form>
         </div>
 
-        {/* Price Range */}
-        <div>
-          <label>Min Price (£)</label>
-          <input type="number" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} style={{ width: '100%', padding: '8px' }} />
+        {/* RIGHT COLUMN: Favourites Drop Zone */}
+        <div 
+          onDrop={handleDrop} 
+          onDragOver={handleDragOver}
+          style={{ 
+            flex: 1, 
+            minWidth: '250px', 
+            background: '#e9ecef', 
+            padding: '15px', 
+            borderRadius: '8px', 
+            border: '2px dashed #6c757d'
+          }}
+        >
+          <h3 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+             <FaHeart color="red" /> Favourites
+          </h3>
+          <p style={{ fontSize: '0.8rem', color: '#666' }}>Drag properties here to save</p>
+          
+          {favorites.length === 0 && <p>No favorites yet.</p>}
+          
+          <ul style={{ listStyle: 'none', padding: 0 }}>
+            {favorites.map(fav => (
+              <li key={fav.id} style={{ background: 'white', marginBottom: '10px', padding: '10px', borderRadius: '4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '0.9rem' }}>{fav.location}</span>
+                <button onClick={() => removeFavorite(fav.id)} style={{ border:'none', background:'transparent', color:'red', cursor:'pointer' }}>
+                  <FaTimes />
+                </button>
+              </li>
+            ))}
+          </ul>
+          
+          {favorites.length > 0 && (
+            <button onClick={clearFavorites} style={{ width: '100%', padding: '5px', background: '#dc3545', color: 'white', border: 'none', borderRadius: '4px' }}>
+              Clear All
+            </button>
+          )}
         </div>
-        <div>
-          <label>Max Price (£)</label>
-          <input type="number" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} style={{ width: '100%', padding: '8px' }} />
-        </div>
+      </div>
 
-        {/* Bedrooms */}
-        <div>
-          <label>Min Beds</label>
-          <input type="number" value={minBeds} onChange={(e) => setMinBeds(e.target.value)} style={{ width: '100%', padding: '8px' }} />
-        </div>
-        <div>
-          <label>Max Beds</label>
-          <input type="number" value={maxBeds} onChange={(e) => setMaxBeds(e.target.value)} style={{ width: '100%', padding: '8px' }} />
-        </div>
-
-        {/* Postcode */}
-        <div>
-          <label>Postcode Area (e.g. BR1)</label>
-          <input type="text" value={postcode} onChange={(e) => setPostcode(e.target.value)} style={{ width: '100%', padding: '8px' }} />
-        </div>
-
-        {/* Date Filters */}
-        <div>
-          <label>Added After</label>
-          <input type="date" value={dateAddedStart} onChange={(e) => setDateAddedStart(e.target.value)} style={{ width: '100%', padding: '8px' }} />
-        </div>
-        <div>
-          <label>Added Before</label>
-          <input type="date" value={dateAddedEnd} onChange={(e) => setDateAddedEnd(e.target.value)} style={{ width: '100%', padding: '8px' }} />
-        </div>
-
-        {/* Buttons */}
-        <div style={{ gridColumn: '1 / -1', display: 'flex', gap: '10px' }}>
-          <button type="submit" style={{ padding: '10px 20px', background: '#007bff', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <FaSearch /> Search
-          </button>
-          <button type="button" onClick={handleClear} style={{ padding: '10px 20px', background: '#6c757d', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <FaTimes /> Clear
-          </button>
-        </div>
-      </form>
-
-      {/* Results Display Area */}
-      <div style={{ marginTop: '30px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
-        {filteredProperties.length === 0 ? <p>No properties found.</p> : 
-          filteredProperties.map(property => (
-            <div key={property.id} style={{ border: '1px solid #ddd', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>
-              <img src={property.picture} alt={property.type} style={{ width: '100%', height: '200px', objectFit: 'cover' }} />
+      {/* RESULTS GRID */}
+      <div style={{ marginTop: '20px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+        {filteredProperties.map(property => {
+          const isFav = favorites.some(f => f.id === property.id);
+          return (
+            <div 
+              key={property.id} 
+              draggable 
+              onDragStart={(e) => handleDragStart(e, property.id)}
+              style={{ border: '1px solid #ddd', borderRadius: '8px', overflow: 'hidden', background: 'white' }}
+            >
+              <img src={property.picture} alt="prop" style={{ width: '100%', height: '200px', objectFit: 'cover' }} />
               <div style={{ padding: '15px' }}>
-                <h3>{property.type} - £{property.price.toLocaleString()}</h3>
-                <p><strong>{property.bedrooms} Beds</strong> | {property.tenure}</p>
+                <h3>£{property.price.toLocaleString()}</h3>
+                <p>{property.type} - {property.bedrooms} Beds</p>
                 <p>{property.location}</p>
-                <p style={{ fontSize: '0.9em', color: '#666' }}>{property.description.substring(0, 100)}...</p>
-                <a href={`/property/${property.id}`} style={{ display: 'block', marginTop: '10px', color: '#007bff', textDecoration: 'none' }}>View Details &rarr;</a>
+                <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
+                  <Link to={`/property/${property.id}`} style={{ textDecoration:'none', color:'#007bff' }}>View Details</Link>
+                  
+                  {/* Heart Button Logic */}
+                  {isFav ? (
+                     <button disabled style={{ border:'none', background:'transparent', color:'red' }}><FaHeart /></button>
+                  ) : (
+                     <button onClick={() => addFavorite(property.id)} style={{ border:'none', background:'transparent', color:'#ccc', cursor:'pointer' }}><FaHeart /></button>
+                  )}
+                </div>
               </div>
             </div>
-          ))
-        }
+          );
+        })}
       </div>
     </div>
   );
