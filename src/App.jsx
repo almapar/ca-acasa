@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import propertiesData from './data/properties.json'; // Importing your data
+import SearchPage from './components/SearchPage';
 
 function App() {
   return (
@@ -14,8 +15,8 @@ function App() {
 
         {/* Routes define which component shows up */}
         <Routes>
-          <Route path="/" element={<h1>Welcome to Estate Agent App</h1>} />
-          <Route path="/search" element={<h1>Search Page (Coming Soon)</h1>} />
+        <Route path="/" element={<SearchPage />} />
+          <Route path="/search" element={<SearchPage />} /> 
         </Routes>
       </div>
     </Router>
