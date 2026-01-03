@@ -5,7 +5,8 @@ import 'react-tabs/style/react-tabs.css';
 import propertiesData from '../data/properties.json';
 import { FaArrowLeft, FaHeart } from 'react-icons/fa'; 
 
-const PropertyPage = () => {
+
+const PropertyPage = ({ favorites = [], addFavorite, removeFavorite }) => {
   const { id } = useParams();
   const property = propertiesData.properties.find(p => p.id === id);
 
@@ -15,23 +16,23 @@ const PropertyPage = () => {
   // State for the list of all images for this property
   const [images, setImages] = useState([]);
 
+  // Check if this property is already in the favorites list
+  const isFav = favorites?.some(f => f.id === property?.id);
+
   useEffect(() => {
     if (property) {
-      // 1. Load the first image as the main one
-      const initialImage = `/images/${property.id}_1.jpg`;
-      setMainImage(initialImage);
-
+      setMainImage(property.picture);
       const imageList = [
-        `/images/${property.id}_1.jpg`,
+        property.picture,
         `/images/${property.id}_2.jpg`,
         `/images/${property.id}_3.jpg`,
         `/images/${property.id}_4.jpg`,
-        `/images/${property.id}_5.jpg`,
-        `/images/${property.id}_6.jpg`
+        `/images/${property.id}_5.jpg`, 
+        `/images/${property.id}_6.jpg`   
       ];
       setImages(imageList);
     }
-  }, [property]); // Re-run this if the property changes
+  }, [property]);
 
   if (!property) {
     return <div style={{ padding: '20px' }}>Property not found! <Link to="/">Return Home</Link></div>;
@@ -48,9 +49,21 @@ const PropertyPage = () => {
                 <h1>{property.location}</h1>
                 <h2 style={{ color: '#007bff' }}>£{property.price.toLocaleString()}</h2>
             </div>
-            <button style={{ padding: '10px 15px', background: 'white', border: '1px solid #ccc', borderRadius: '5px', cursor: 'pointer' }}>
-                <FaHeart color="red" /> Save
-            </button>
+            
+            {/* TOGGLE BUTTON LOGIC */}
+            {isFav ? (
+                <button 
+                    onClick={() => removeFavorite(property.id)}
+                    style={{ padding: '10px 15px', background: '#ffe6e6', border: '1px solid red', borderRadius: '5px', cursor: 'pointer', color: 'red', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <FaHeart /> Saved
+                </button>
+            ) : (
+                <button 
+                    onClick={() => addFavorite(property.id)}
+                    style={{ padding: '10px 15px', background: 'white', border: '1px solid #ccc', borderRadius: '5px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <FaHeart color="#ccc" /> Save
+                </button>
+            )}
         </div>
 
         {/* GALLERY SECTION */}
@@ -60,7 +73,6 @@ const PropertyPage = () => {
                 <img 
                   src={mainImage} 
                   alt="Main Property View" 
-                  // Add an onError to fallback if an image is missing
                   onError={(e) => { e.target.src = '/images/prop1_1.jpg'; }} 
                   style={{ width: '100%', maxHeight: '500px', objectFit: 'cover', borderRadius: '8px' }} 
                 />
@@ -74,7 +86,7 @@ const PropertyPage = () => {
                         src={img} 
                         alt={`View ${index + 1}`} 
                         onClick={() => setMainImage(img)}
-                        onError={(e) => { e.target.style.display = 'none'; }} // Hide thumbnail if file missing
+                        onError={(e) => { e.target.style.display = 'none'; }} 
                         style={{ 
                             width: '100%', 
                             height: '80px', 
