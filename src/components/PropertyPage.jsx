@@ -5,7 +5,8 @@ import 'react-tabs/style/react-tabs.css';
 import propertiesData from '../data/properties.json';
 import { FaArrowLeft, FaHeart } from 'react-icons/fa'; 
 
-const PropertyPage = () => {
+const PropertyPage = ({ favorites, addFavorite, removeFavorite }) => {
+    const isFav = favorites.some(f => f.id === property?.id);
   const { id } = useParams();
   const property = propertiesData.properties.find(p => p.id === id);
 
@@ -51,9 +52,20 @@ const PropertyPage = () => {
                 <h1>{property.location}</h1>
                 <h2 style={{ color: '#007bff' }}>£{property.price.toLocaleString()}</h2>
             </div>
-            <button style={{ padding: '10px 15px', background: 'white', border: '1px solid #ccc', borderRadius: '5px', cursor: 'pointer' }}>
-                <FaHeart color="red" /> Save
-            </button>
+            {/* Button toggles between Add and Remove */}
+{isFav ? (
+    <button 
+        onClick={() => removeFavorite(property.id)}
+        style={{ padding: '10px 15px', background: '#ffe6e6', border: '1px solid red', borderRadius: '5px', cursor: 'pointer', color: 'red' }}>
+        <FaHeart /> Saved
+    </button>
+) : (
+    <button 
+        onClick={() => addFavorite(property.id)}
+        style={{ padding: '10px 15px', background: 'white', border: '1px solid #ccc', borderRadius: '5px', cursor: 'pointer' }}>
+        <FaHeart color="#ccc" /> Save
+    </button>
+)}
         </div>
 
         {/* GALLERY SECTION */}
