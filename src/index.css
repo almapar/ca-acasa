@@ -56,18 +56,55 @@ body {
   box-shadow: var(--shadow-md);
   margin-bottom: 30px;
   border-radius: var(--border-radius);
-  display: flex;
-  gap: 20px;
   border: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
 }
-.navbar a {
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   text-decoration: none;
   color: var(--text-main);
-  font-weight: 700;
-  font-size: 1.1rem;
+  font-weight: 800;
+  font-size: 1.2rem;
+  letter-spacing: -0.5px;
+  transition: 0.4s;
 }
-.navbar a:hover {
+
+.nav-logo svg {
   color: var(--primary-color);
+}
+
+.nav-logo:hover {
+  opacity: 0.8;
+}
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+}
+
+.nav-item {
+  text-decoration: none;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 1rem;
+  transition: color 0.4s;
+}
+
+.nav-item:hover {
+  color: var(--primary-color);
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    gap: 15px;
+    padding: 1rem;
+  }
 }
 
 .search-container {
