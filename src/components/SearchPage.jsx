@@ -118,13 +118,13 @@ const SearchPage = ({ favorites, addFavorite, removeFavorite, clearFavorites }) 
           </div>
           
           <div className="form-group">
-              <label>After</label>
-              <input type="date" value={dateAddedStart} onChange={e => setDateAddedStart(e.target.value)}/>
-          </div>
-          
-          <div className="form-group">
               <label>Before</label>
               <input type="date" value={dateAddedEnd} onChange={e => setDateAddedEnd(e.target.value)}/>
+          </div>
+
+          <div className="form-group">
+              <label>After</label>
+              <input type="date" value={dateAddedStart} onChange={e => setDateAddedStart(e.target.value)}/>
           </div>
           
           <div className="btn-group">
@@ -144,10 +144,10 @@ const SearchPage = ({ favorites, addFavorite, removeFavorite, clearFavorites }) 
            <FaHeart color="#ef4444" /> Favourites
         </h3>
         <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '15px' }}>
-          Drag properties here to save
+          Drag properties here to save!
         </p>
         
-        {favorites.length === 0 && <p style={{fontStyle:'italic', color:'#94a3b8'}}>No favorites yet.</p>}
+        {favorites.length === 0 && <p style={{fontStyle:'italic', color:'#94a3b8'}}>No favourites yet.</p>}
         
         <div className="fav-list">
           {favorites.map(fav => (

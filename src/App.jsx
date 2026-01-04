@@ -52,7 +52,7 @@ function App() {
               </Link>
 
               <div className="nav-links">
-                <Link to="/search" className="nav-item">Search Properties</Link>
+                <Link to="/search" className="nav-item">Nowhere else like home.</Link>
               </div>
             </nav>
 
