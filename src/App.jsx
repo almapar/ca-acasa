@@ -30,8 +30,8 @@ function App() {
       <div className="App">
         <div className="app-container">
             <nav className="navbar">
-              <Link to="/" style={{ fontSize:'1.2rem', fontWeight:'bold', color:'#1e293b' }}>ca-acasa</Link>
-              <Link to="/search">Nowhere else like home</Link>
+              <Link to="/" style={{ fontSize:'1.2rem', fontWeight:'bold', color:'#1e293b' }}>ESTATE AGENT</Link>
+              <Link to="/search">Search Properties</Link>
             </nav>
 
             <Routes>
