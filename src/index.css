@@ -51,18 +51,24 @@ body {
   width: 100%; /* ensure it doesn't overflow */
 }
 
+/* --- Navbar Layout --- */
 .navbar {
   background: var(--card-bg);
-  padding: 1rem 2rem;
+  padding: 0 2rem;
+  height: 80px; /* Fixed height for consistency */
   box-shadow: var(--shadow-md);
   margin-bottom: 30px;
   border-radius: var(--border-radius);
   border: 1px solid var(--border-color);
+  
   display: flex;
   justify-content: space-between; 
   align-items: center;
+  position: relative;
+  z-index: 100;
 }
 
+/* 1. Logo */
 .nav-logo {
   display: flex;
   align-items: center;
@@ -70,41 +76,102 @@ body {
   text-decoration: none;
   color: var(--text-main);
   font-weight: 800;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   letter-spacing: -0.5px;
-  transition: 0.4s;
 }
+.nav-logo svg { color: var(--primary-color); }
 
-.nav-logo svg {
-  color: var(--primary-color);
-}
-
-.nav-logo:hover {
-  opacity: 0.8;
-}
-
-.nav-links {
+/* 2. Middle Search Bar */
+.nav-search {
   display: flex;
-  gap: 20px;
+  align-items: center;
+  background: var(--bg-color);
+  padding: 8px 15px;
+  border-radius: 50px;
+  border: 1px solid var(--border-color);
+  width: 300px;
+  transition: all 0.2s;
+}
+.nav-search:focus-within {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(225, 29, 72, 0.1);
+}
+.nav-search input {
+  border: none;
+  background: transparent;
+  outline: none;
+  margin-left: 10px;
+  width: 100%;
+  color: var(--text-main);
+}
+.search-icon { color: var(--text-muted); }
+
+/* 3. Hamburger Icon (Hidden on Desktop) */
+.menu-icon {
+  display: none;
+  font-size: 1.5rem;
+  color: var(--text-main);
+  cursor: pointer;
 }
 
+/* 4. Desktop Menu */
+.nav-menu {
+  display: flex;
+  gap: 30px;
+}
 .nav-item {
   text-decoration: none;
   color: var(--text-muted);
   font-weight: 600;
   font-size: 1rem;
-  transition: color 0.4s;
+  transition: color 0.2s;
 }
+.nav-item:hover { color: var(--primary-color); }
 
-.nav-item:hover {
-  color: var(--primary-color);
-}
-
-@media (max-width: 768px) {
+/* --- Mobile Responsiveness --- */
+@media (max-width: 900px) {
   .navbar {
+    padding: 0 1rem;
+  }
+  
+  /* Hide search on small tablets/phones to save space */
+  .nav-search {
+    display: none; 
+  }
+
+  /* Show Hamburger */
+  .menu-icon {
+    display: block; 
+  }
+
+  /* Transform Menu into Dropdown/Drawer */
+  .nav-menu {
+    display: flex;
     flex-direction: column;
-    gap: 15px;
-    padding: 1rem;
+    position: absolute;
+    top: 80px; /* Right below navbar */
+    left: 0;
+    width: 100%;
+    background: var(--card-bg);
+    box-shadow: var(--shadow-lg);
+    border-radius: 0 0 12px 12px;
+    padding: 20px;
+    gap: 20px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    
+    /* Animation Logic */
+    opacity: 0;
+    transform: translateY(-20px);
+    pointer-events: none; /* Cant click when hidden */
+    transition: all 0.3s ease;
+  }
+
+  /* When menu is active (Open) */
+  .nav-menu.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
   }
 }
 

@@ -3,10 +3,12 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import SearchPage from './components/SearchPage';
 import PropertyPage from './components/PropertyPage';
 import propertiesData from './data/properties.json';
+import { FaBars, FaTimes, FaSearch } from 'react-icons/fa';
 import './index.css';
 
 function App() {
   const [favorites, setFavorites] = useState([]);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const addFavorite = (propertyId) => {
     if (!favorites.some(fav => fav.id === propertyId)) {
@@ -29,12 +31,13 @@ function App() {
     <Router>
       <div className="App">
         <div className="app-container">
+            {/* NEW NAVBAR */}
             <nav className="navbar">
-              <Link to="/" className="nav-logo">
+              {/* 1. Logo (Left) */}
+              <Link to="/" className="nav-logo" onClick={() => setIsMenuOpen(false)}>
                 <svg 
                   xmlns="http://www.w3.org/2000/svg" 
-                  width="24" 
-                  height="24" 
+                  width="24" height="24" 
                   viewBox="0 0 24 24" 
                   fill="none" 
                   stroke="currentColor" 
@@ -51,8 +54,20 @@ function App() {
                 <span>ca acasă</span>
               </Link>
 
-              <div className="nav-links">
-                <Link to="/search" className="nav-item">Nowhere else like home.</Link>
+              <div className="nav-search">
+                 <FaSearch className="search-icon" />
+                 <input type="text" placeholder="Quick Search..." />
+              </div>
+
+              <div className="menu-icon" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                 {isMenuOpen ? <FaTimes /> : <FaBars />}
+              </div>
+
+              <div className={isMenuOpen ? "nav-menu active" : "nav-menu"}>
+                <Link to="/" className="nav-item" onClick={() => setIsMenuOpen(false)}>Home</Link>
+                <Link to="/search" className="nav-item" onClick={() => setIsMenuOpen(false)}>Properties</Link>
+                <Link to="/search" className="nav-item" onClick={() => setIsMenuOpen(false)}>About Us</Link>
+                <Link to="/search" className="nav-item" onClick={() => setIsMenuOpen(false)}>Contact</Link>
               </div>
             </nav>
 
