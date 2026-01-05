@@ -66,9 +66,7 @@ const PropertyPage = ({ favorites = [], addFavorite, removeFavorite }) => {
             )}
         </div>
 
-        {/* GALLERY SECTION */}
         <div className="gallery-container">
-            {/* Main Large Image */}
             <div style={{ marginBottom: '10px' }}>
                 <img 
                   src={mainImage} 
@@ -78,7 +76,6 @@ const PropertyPage = ({ favorites = [], addFavorite, removeFavorite }) => {
                 />
             </div>
 
-            {/* Thumbnails Grid */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '10px' }}>
                 {images.map((img, index) => (
                     <img 
@@ -101,7 +98,6 @@ const PropertyPage = ({ favorites = [], addFavorite, removeFavorite }) => {
             </div>
         </div>
 
-        {/* TABS SECTION */}
         <div style={{ marginTop: '30px' }}>
             <Tabs>
                 <TabList>
@@ -122,12 +118,13 @@ const PropertyPage = ({ favorites = [], addFavorite, removeFavorite }) => {
                 </TabPanel>
 
                 <TabPanel>
-                    <div style={{ padding: '20px', textAlign: 'center', background: '#f9f9f9' }}>
-                        <p>Floor Plan Layout</p>
-                        <div style={{ width: '100%', height: '300px', background: '#ddd', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                           Floor Plan Placeholder
-                        </div>
-                    </div>
+                <div className="floorplan-container">
+                    <img 
+                        src={property.floorplan} 
+                        alt="Floor Plan" 
+                        style={{ width: '100%', maxWidth: '600px', borderRadius: '8px' }}
+                    />
+                </div>
                 </TabPanel>
 
                 <TabPanel>

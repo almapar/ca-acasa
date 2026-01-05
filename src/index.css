@@ -254,6 +254,14 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
+.floorplan-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 20px 0;
+}
+
 @media (max-width: 900px) {
   .navbar { padding: 0 1rem; }
   .nav-search { display: none; }
