@@ -1,24 +1,27 @@
 import React, { useState, useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import propertiesData from '../data/properties.json';
-import { FaSearch, FaTimes, FaHeart } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { 
+  FaHeart, FaBed, FaMapMarkerAlt, FaArrowLeft, FaRulerCombined, FaSearchPlus,
+  FaChevronLeft, FaChevronRight, FaTrash, FaSearch, FaTimes
+} from 'react-icons/fa';
+import ImageViewer from './ImageViewer';
 
 const SearchPage = ({ favorites, addFavorite, removeFavorite, clearFavorites, searchTerm }) => {
   const [properties, setProperties] = useState([]);
   const [filteredProperties, setFilteredProperties] = useState([]);
   
-  // State
   const [type, setType] = useState('Any');
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
   const [minBeds, setMinBeds] = useState('');
   const [maxBeds, setMaxBeds] = useState('');
   const [postcode, setPostcode] = useState('');
-  
   const [dateAddedStart, setDateAddedStart] = useState('');
   const [dateAddedEnd, setDateAddedEnd] = useState('');
   
-  const [isDragOver, setIsDragOver] = useState(false);
+  const [isDragOverFavs, setIsDragOverFavs] = useState(false);
+  const [isDragOverRemove, setIsDragOverRemove] = useState(false); 
 
   useEffect(() => {
     setProperties(propertiesData.properties);
@@ -95,24 +98,36 @@ const SearchPage = ({ favorites, addFavorite, removeFavorite, clearFavorites, se
     setFilteredProperties(properties);
   };
 
-  const handleDragStart = (e, propertyId) => {
+  const handleDragStartAdd = (e, propertyId) => {
     e.dataTransfer.setData("text/plain", propertyId);
+    e.dataTransfer.setData("action", "add"); 
   };
 
-  const handleDrop = (e) => {
+  const handleDragStartRemove = (e, propertyId) => {
+    e.dataTransfer.setData("text/plain", propertyId);
+    e.dataTransfer.setData("action", "remove"); 
+  };
+
+  const handleDropOnFavs = (e) => {
     e.preventDefault();
-    setIsDragOver(false);
-    const propertyId = e.dataTransfer.getData("text/plain");
-    addFavorite(propertyId);
+    setIsDragOverFavs(false);
+    const action = e.dataTransfer.getData("action");
+    
+    if (action === "add") {
+      const propertyId = e.dataTransfer.getData("text/plain");
+      addFavorite(propertyId);
+    }
   };
 
-  const handleDragOver = (e) => {
+  const handleDropOnResults = (e) => {
     e.preventDefault();
-    setIsDragOver(true);
-  };
+    setIsDragOverRemove(false);
+    const action = e.dataTransfer.getData("action");
 
-  const handleDragLeave = () => {
-    setIsDragOver(false);
+    if (action === "remove") {
+      const propertyId = e.dataTransfer.getData("text/plain");
+      removeFavorite(propertyId);
+    }
   };
 
   return (
@@ -129,79 +144,34 @@ const SearchPage = ({ favorites, addFavorite, removeFavorite, clearFavorites, se
                 <option value="Flat">Flat</option>
               </select>
           </div>
-          
           <div className="form-group">
               <label>Min Price</label>
-              <input 
-                type="number" 
-                placeholder="e.g. 50000"
-                value={minPrice}
-                onChange={(e) => setMinPrice(e.target.value)}
-                min="0"
-              />
+              <input type="number" placeholder="e.g. 50000" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} min="0" />
           </div>
-          
           <div className="form-group">
               <label>Max Price</label>
-              <input 
-                type="number" 
-                placeholder="e.g. 700000"
-                value={maxPrice}
-                onChange={(e) => setMaxPrice(e.target.value)}
-                min="0"
-              />
+              <input type="number" placeholder="e.g. 700000" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} min="0" />
           </div>
-          
           <div className="form-group">
               <label>Min Beds</label>
-              <input 
-                type="number" 
-                placeholder="e.g. 1"
-                value={minBeds}
-                onChange={(e) => setMinBeds(e.target.value)}
-                min="0"
-              />
+              <input type="number" placeholder="e.g. 1" value={minBeds} onChange={(e) => setMinBeds(e.target.value)} min="0" />
           </div>
-          
           <div className="form-group">
               <label>Max Beds</label>
-              <input 
-                type="number" 
-                placeholder="e.g. 5"
-                value={maxBeds}
-                onChange={(e) => setMaxBeds(e.target.value)}
-                min="0"
-              />
+              <input type="number" placeholder="e.g. 5" value={maxBeds} onChange={(e) => setMaxBeds(e.target.value)} min="0" />
           </div>
-          
           <div className="form-group">
             <label>Postcode</label>
-            <input 
-                type="text" 
-                placeholder="e.g. BR1"
-                value={postcode}
-                onChange={(e) => setPostcode(e.target.value)}
-            />
+            <input type="text" placeholder="e.g. BR1" value={postcode} onChange={(e) => setPostcode(e.target.value)} />
           </div>
-          
           <div className="form-group">
               <label>Added After</label>
-              <input 
-                type="date" 
-                value={dateAddedStart}
-                onChange={(e) => setDateAddedStart(e.target.value)}
-              />
+              <input type="date" value={dateAddedStart} onChange={(e) => setDateAddedStart(e.target.value)} />
           </div>
-          
           <div className="form-group">
               <label>Added Before</label>
-              <input 
-                type="date" 
-                value={dateAddedEnd}
-                onChange={(e) => setDateAddedEnd(e.target.value)}
-              />
+              <input type="date" value={dateAddedEnd} onChange={(e) => setDateAddedEnd(e.target.value)} />
           </div>
-          
           <div className="btn-group">
             <button type="submit" className="btn-primary"><FaSearch /> Search</button>
             <button type="button" onClick={handleClear} className="btn-secondary"><FaTimes /> Clear</button>
@@ -210,23 +180,29 @@ const SearchPage = ({ favorites, addFavorite, removeFavorite, clearFavorites, se
       </div>
 
       <div 
-        onDrop={handleDrop} 
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        className={`favorites-panel ${isDragOver ? 'drag-over' : ''}`}
+        onDrop={handleDropOnFavs} 
+        onDragOver={(e) => { e.preventDefault(); setIsDragOverFavs(true); }}
+        onDragLeave={() => setIsDragOverFavs(false)}
+        className={`favorites-panel ${isDragOverFavs ? 'drag-over' : ''}`}
       >
         <h3 style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: 0 }}>
            <FaHeart color="#ef4444" /> Favourites
         </h3>
         <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '15px' }}>
-          Drag properties here to save
+          Drag here to save. Drag out to remove.
         </p>
         
-        {favorites.length === 0 && <p style={{fontStyle:'italic', color:'#94a3b8'}}>No favorites yet.</p>}
+        {favorites.length === 0 && <p style={{fontStyle:'italic', color:'#94a3b8'}}>No favourites yet.</p>}
         
         <div className="fav-list">
           {favorites.map(fav => (
-            <div key={fav.id} className="fav-item">
+            <div 
+              key={fav.id} 
+              className="fav-item"
+              draggable
+              onDragStart={(e) => handleDragStartRemove(e, fav.id)}
+              style={{ cursor: 'grab' }}
+            >
               <span>{fav.location}</span>
               <button onClick={() => removeFavorite(fav.id)} style={{ border:'none', background:'transparent', color:'#ef4444', cursor:'pointer' }}>
                 <FaTimes />
@@ -242,7 +218,17 @@ const SearchPage = ({ favorites, addFavorite, removeFavorite, clearFavorites, se
         )}
       </div>
 
-      <div className="results-container">
+      <div 
+        className="results-container"
+        onDrop={handleDropOnResults}
+        onDragOver={(e) => { e.preventDefault(); setIsDragOverRemove(true); }}
+        onDragLeave={() => setIsDragOverRemove(false)}
+        style={{ 
+            border: isDragOverRemove ? '2px dashed #ef4444' : 'none',
+            borderRadius: '12px',
+            transition: 'border 0.2s'
+        }}
+      >
         {filteredProperties.length === 0 ? <p>No results found.</p> :
         filteredProperties.map(property => {
           const isFav = favorites.some(f => f.id === property.id);
@@ -251,7 +237,7 @@ const SearchPage = ({ favorites, addFavorite, removeFavorite, clearFavorites, se
               key={property.id} 
               className="property-card"
               draggable 
-              onDragStart={(e) => handleDragStart(e, property.id)}
+              onDragStart={(e) => handleDragStartAdd(e, property.id)}
             >
               <img src={property.picture} alt="prop" />
               <div className="card-content">
