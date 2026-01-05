@@ -9,6 +9,7 @@
             "description": "Attractive three bedroom semi-detached family home situated within 0.5 miles of Petts Wood station.",
             "location": "Petts Wood Road, Petts Wood, Orpington BR5",
             "picture": "/images/prop1.jpg",
+            "floorplan": "/floorplans/prop1-floorplan.jpg",
             "added": { "month": "October", "day": 12, "year": 2022 }
         },
         {
@@ -20,6 +21,7 @@
             "description": "Presented in excellent decorative order throughout is this two double bedroom, two bathroom, garden flat.",
             "location": "Crofton Road Orpington BR6",
             "picture": "/images/prop2.jpg",
+            "floorplan": "/floorplans/prop2-floorplan.jpg",
             "added": { "month": "September", "day": 14, "year": 2022 }
         },
         {
@@ -31,6 +33,7 @@
             "description": "Stunning four bedroom detached house with large garden and garage, close to local schools.",
             "location": "Station Road, Bromley BR1",
             "picture": "/images/prop3.jpg",
+            "floorplan": "/floorplans/prop3-floorplan.jpg",
             "added": { "month": "January", "day": 10, "year": 2023 }
         },
         {
@@ -42,6 +45,7 @@
             "description": "Modern one bedroom apartment close to amenities and walking distance to the high street.",
             "location": "High Street, Penge SE20",
             "picture": "/images/prop4.jpg",
+            "floorplan": "/floorplans/prop4-floorplan.jpg",
             "added": { "month": "March", "day": 5, "year": 2023 }
         },
         {
@@ -53,6 +57,7 @@
             "description": "Luxurious five bedroom mansion with pool and gated entrance.",
             "location": "Chislehurst Road, Chislehurst BR7",
             "picture": "/images/prop5.jpg",
+            "floorplan": "/floorplans/prop5-floorplan.jpg",
             "added": { "month": "November", "day": 20, "year": 2022 }
         },
         {
@@ -64,6 +69,7 @@
             "description": "Spacious two bedroom flat with balcony views and underground parking.",
             "location": "Widmore Road, Bromley BR1",
             "picture": "/images/prop6.jpg",
+            "floorplan": "/floorplans/prop6-floorplan.jpg",
             "added": { "month": "December", "day": 1, "year": 2022 }
         },
         {
@@ -75,6 +81,7 @@
             "description": "Cozy three bedroom cottage near the park, perfect for first time buyers.",
             "location": "Hayes Lane, Beckenham BR3",
             "picture": "/images/prop7.jpg",
+            "floorplan": "/floorplans/prop7-floorplan.jpg",
             "added": { "month": "February", "day": 14, "year": 2023 }
         }
     ]
