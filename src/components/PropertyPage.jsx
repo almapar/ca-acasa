@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import propertiesData from '../data/properties.json';
-import { FaHeart, FaBed, FaMapMarkerAlt, FaArrowLeft, FaRulerCombined, FaSearchPlus } from 'react-icons/fa';
+import { 
+  FaHeart, FaBed, FaMapMarkerAlt, FaArrowLeft, FaRulerCombined, FaSearchPlus,
+  FaChevronLeft, FaChevronRight
+} from 'react-icons/fa';
 import ImageViewer from './ImageViewer';
 
 const PropertyPage = ({ favorites, addFavorite, removeFavorite }) => {
@@ -10,7 +13,6 @@ const PropertyPage = ({ favorites, addFavorite, removeFavorite }) => {
 
   const [selectedMainImage, setSelectedMainImage] = useState(property ? property.picture : '');
   const [currentGalleryIndex, setCurrentGalleryIndex] = useState(0);
-
   const [isViewerOpen, setIsViewerOpen] = useState(false);
 
   useEffect(() => {
@@ -36,6 +38,7 @@ const PropertyPage = ({ favorites, addFavorite, removeFavorite }) => {
 
   const thumbnailImages = [property.picture, ...(property.images || [])];
 
+
   const handleThumbnailClick = (imgUrl, index) => {
     setSelectedMainImage(imgUrl);
     setCurrentGalleryIndex(index);
@@ -44,6 +47,20 @@ const PropertyPage = ({ favorites, addFavorite, removeFavorite }) => {
   const openViewer = (index) => {
     setCurrentGalleryIndex(index); 
     setIsViewerOpen(true);
+  };
+
+  const handleNextImage = (e) => {
+    e.stopPropagation();
+    const nextIndex = (currentGalleryIndex + 1) % thumbnailImages.length;
+    setCurrentGalleryIndex(nextIndex);
+    setSelectedMainImage(thumbnailImages[nextIndex]);
+  };
+
+  const handlePrevImage = (e) => {
+    e.stopPropagation();
+    const prevIndex = (currentGalleryIndex - 1 + thumbnailImages.length) % thumbnailImages.length;
+    setCurrentGalleryIndex(prevIndex);
+    setSelectedMainImage(thumbnailImages[prevIndex]);
   };
 
   return (
@@ -60,13 +77,50 @@ const PropertyPage = ({ favorites, addFavorite, removeFavorite }) => {
       />
 
       <div className="property-header" style={{ marginBottom: '30px' }}>
+        
         <div 
           className="image-container" 
           style={{ position: 'relative', cursor: 'pointer', borderRadius: '12px', overflow: 'hidden' }}
           onClick={() => openViewer(currentGalleryIndex)}
         >
-          <img src={selectedMainImage} alt={property.location} style={{ width: '100%', height: '400px', objectFit: 'cover' }} />
+          <img 
+            src={selectedMainImage} 
+            alt={property.location} 
+            style={{ width: '100%', height: '450px', objectFit: 'cover', transition: 'opacity 0.3s' }} 
+          />
           
+          {thumbnailImages.length > 1 && (
+            <button 
+              onClick={handlePrevImage}
+              style={{
+                position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)',
+                background: 'rgba(0, 0, 0, 0.5)', color: 'white', border: 'none', borderRadius: '50%',
+                width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                cursor: 'pointer', fontSize: '1.2rem', zIndex: 10
+              }}
+              onMouseOver={(e) => e.target.style.background = 'var(--primary-color)'}
+              onMouseOut={(e) => e.target.style.background = 'rgba(0, 0, 0, 0.5)'}
+            >
+              <FaChevronLeft />
+            </button>
+          )}
+
+          {thumbnailImages.length > 1 && (
+            <button 
+              onClick={handleNextImage}
+              style={{
+                position: 'absolute', right: '15px', top: '50%', transform: 'translateY(-50%)',
+                background: 'rgba(0, 0, 0, 0.5)', color: 'white', border: 'none', borderRadius: '50%',
+                width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                cursor: 'pointer', fontSize: '1.2rem', zIndex: 10
+              }}
+              onMouseOver={(e) => e.target.style.background = 'var(--primary-color)'}
+              onMouseOut={(e) => e.target.style.background = 'rgba(0, 0, 0, 0.5)'}
+            >
+              <FaChevronRight />
+            </button>
+          )}
+
           <div style={{ position: 'absolute', bottom: '15px', right: '15px', background: 'rgba(0,0,0,0.7)', color: 'white', padding: '8px 15px', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem' }}>
             <FaSearchPlus /> View Fullscreen
           </div>
@@ -90,11 +144,11 @@ const PropertyPage = ({ favorites, addFavorite, removeFavorite }) => {
                     cursor: 'pointer',
                     border: isActive ? '3px solid var(--primary-color)' : '1px solid var(--border-color)',
                     flexShrink: 0,
-                    transition: 'all 0.2s',
-                    opacity: isActive ? '1' : '0.7'
+                    opacity: isActive ? '1' : '0.6',
+                    transition: 'all 0.2s'
                   }} 
                   onMouseOver={(e) => { if(!isActive) e.target.style.opacity = '1'; }}
-                  onMouseOut={(e) =>  { if(!isActive) e.target.style.opacity = '0.7'; }}
+                  onMouseOut={(e) =>  { if(!isActive) e.target.style.opacity = '0.6'; }}
                 />
                );
             })}
