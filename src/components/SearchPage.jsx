@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import propertiesData from '../data/properties.json';
 import { FaSearch, FaTimes, FaHeart } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import { DropdownList, NumberPicker, DatePicker } from 'react-widgets';
+import { DropdownList, NumberPicker, DatePicker, Combobox } from 'react-widgets';
 
 const SearchPage = ({ favorites, addFavorite, removeFavorite, clearFavorites }) => {
   const [properties, setProperties] = useState([]);
@@ -163,16 +163,17 @@ const SearchPage = ({ favorites, addFavorite, removeFavorite, clearFavorites }) 
               />
           </div>
           
-          <div className="form-group">
-              <label>Postcode</label>
-              <input 
-                value={postcode} 
-                onChange={e => setPostcode(e.target.value)} 
-                placeholder="e.g. BR1"
-                className="rw-widget-input rw-widget-picker rw-widget-container" // fake widget class to be consistent
-                style={{ border: '1px solid #ccc', borderRadius: '4px', padding: '7px' }}
-              />
-          </div>
+          <div className="form-group widget-group">
+    <label>Postcode</label>
+    {/* suggests existing postcodes but also allows typing new ones */}
+    <Combobox 
+  data={[...new Set(properties.map(p => p.location.split(' ').pop()))]} // extracts unique last words from addresses
+  value={postcode}
+  onChange={value => setPostcode(value)}
+  placeholder="e.g. BR5"
+  suggest={true}
+/>
+</div>
           
           <div className="form-group widget-group">
               <label>Added After</label>
