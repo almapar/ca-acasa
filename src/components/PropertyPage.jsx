@@ -2,15 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import propertiesData from '../data/properties.json';
 import { 
-  FaHeart, FaBed, FaMapMarkerAlt, FaArrowLeft, FaRulerCombined, FaSearchPlus,
-  FaChevronLeft, FaChevronRight
-} from 'react-icons/fa';
+    FaBed, FaMapMarkerAlt, FaRulerCombined, FaArrowLeft, FaCheckCircle, 
+    FaCamera, FaMap, FaChevronLeft, FaChevronRight, FaSearchPlus, FaHeart 
+  } from 'react-icons/fa';
 import ImageViewer from './ImageViewer';
 
 const PropertyPage = ({ favorites, addFavorite, removeFavorite }) => {
   const { id } = useParams();
   const property = propertiesData.properties.find(p => p.id === id);
-
+  const [activeTab, setActiveTab] = useState('description');
   const [selectedMainImage, setSelectedMainImage] = useState(property ? property.picture : '');
   const [currentGalleryIndex, setCurrentGalleryIndex] = useState(0);
   const [isViewerOpen, setIsViewerOpen] = useState(false);
@@ -161,46 +161,74 @@ const PropertyPage = ({ favorites, addFavorite, removeFavorite }) => {
       </div>
 
       <div className="property-info-grid">
-        <div className="left-col">
-        <div className="specs">
-            <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><FaBed color="var(--primary-color)"/> <strong>{property.bedrooms}</strong> Bedrooms</span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><FaRulerCombined color="var(--primary-color)"/> <strong>{property.type}</strong></span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><FaMapMarkerAlt color="var(--primary-color)"/> {property.location.split(',').pop()}</span>
-        </div>
+<div className="tabs-container">
+    <div className="tabs-header">
+        <button 
+            className={`tab-btn ${activeTab === 'description' ? 'active' : ''}`} 
+            onClick={() => setActiveTab('description')}
+        >
+            Description
+        </button>
+        <button 
+            className={`tab-btn ${activeTab === 'map' ? 'active' : ''}`} 
+            onClick={() => setActiveTab('map')}
+        >
+            <FaMap /> Map
+        </button>
+        <button 
+            className={`tab-btn ${activeTab === 'gallery' ? 'active' : ''}`} 
+            onClick={() => setActiveTab('gallery')}
+        >
+            <FaCamera /> Gallery
+        </button>
+    </div>
 
-          <h3>Description</h3>
-          <p style={{ lineHeight: '1.8', color: 'var(--text-muted)', marginBottom: '40px' }}>
-            {property.description}
-          </p>
-          
-          {property.floorplan && (
-            <>
-              <h3>Floor Plan</h3>
-              <div 
-                className="floorplan-container" 
-                onClick={() => openViewer(fullGalleryImages.length - 1)}
-                style={{ cursor: 'pointer' }}
-              >
-                 <img 
-                   src={property.floorplan} 
-                   alt="Floor Plan" 
-                   style={{ width: '100%', maxWidth: '600px', border: '1px solid var(--border-color)', borderRadius: '8px' }} 
-                 />
-              </div>
-            </>
-          )}
-        </div>
+    <div className="tab-content">
+        
+        {activeTab === 'description' && (
+            <div className="fade-in">
+                <h3>Description</h3>
+                <p>{property.description}</p>
+                
+                <h3 style={{ marginTop: '30px' }}>Floor Plan</h3>
+                <div className="floorplan-container">
+                        {property.floorplan ? (
+                        <img src={property.floorplan} alt="Floor Plan" style={{ maxWidth: '100%', borderRadius: '8px' }} />
+                        ) : (
+                        <div style={{ padding: '40px', background: '#f1f5f9', borderRadius: '8px', textAlign: 'center' }}>
+                            <FaRulerCombined size={40} color="#cbd5e1"/>
+                            <p>Floor plan not available.</p>
+                        </div>
+                        )}
+                </div>
+            </div>
+        )}
 
-        <div className="right-col">
-          <div className="agent-card" style={{ padding: '25px', background: 'var(--card-bg)', borderRadius: '12px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-md)', position: 'sticky', top: '20px' }}>
-            <h3>Interested?</h3>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '20px' }}>
-              Contact our estate agents today to book a viewing for this property.
-            </p>
-            <button className="btn-primary" style={{ width: '100%', justifyContent: 'center' }}>Book Viewing</button>
-            <button className="btn-secondary" style={{ width: '100%', justifyContent: 'center', marginTop: '10px' }}>Call Agent</button>
-          </div>
-        </div>
+        {activeTab === 'map' && (
+            <div className="fade-in">
+                <iframe 
+                    title="Property Location"
+                    width="100%" 
+                    height="400" 
+                    frameBorder="0" 
+                    scrolling="no" 
+                    marginHeight="0" 
+                    marginWidth="0" 
+                    style={{ borderRadius: '12px', border: '1px solid var(--border-color)' }}
+                    src={`https://maps.google.com/maps?q=${encodeURIComponent(property.location)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+                >
+                </iframe>
+            </div>
+        )}
+
+        {activeTab === 'gallery' && (
+            <div className="fade-in">
+                <ImageViewer images={property.images} />
+            </div>
+        )}
+
+    </div>
+</div>
       </div>
     </div>
   );
