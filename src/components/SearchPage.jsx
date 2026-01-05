@@ -2,21 +2,21 @@ import React, { useState, useEffect } from 'react';
 import propertiesData from '../data/properties.json';
 import { FaSearch, FaTimes, FaHeart } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import { DropdownList, NumberPicker, DatePicker, Combobox } from 'react-widgets';
 
 const SearchPage = ({ favorites, addFavorite, removeFavorite, clearFavorites, searchTerm }) => {
   const [properties, setProperties] = useState([]);
   const [filteredProperties, setFilteredProperties] = useState([]);
   
-  const [type, setType] = useState(null);
-  const [minPrice, setMinPrice] = useState(null);
-  const [maxPrice, setMaxPrice] = useState(null);
-  const [minBeds, setMinBeds] = useState(null);
-  const [maxBeds, setMaxBeds] = useState(null);
+  // State
+  const [type, setType] = useState('Any');
+  const [minPrice, setMinPrice] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
+  const [minBeds, setMinBeds] = useState('');
+  const [maxBeds, setMaxBeds] = useState('');
   const [postcode, setPostcode] = useState('');
   
-  const [dateAddedStart, setDateAddedStart] = useState(null);
-  const [dateAddedEnd, setDateAddedEnd] = useState(null);
+  const [dateAddedStart, setDateAddedStart] = useState('');
+  const [dateAddedEnd, setDateAddedEnd] = useState('');
   
   const [isDragOver, setIsDragOver] = useState(false);
 
@@ -53,22 +53,21 @@ const SearchPage = ({ favorites, addFavorite, removeFavorite, clearFavorites, se
     const results = properties.filter((prop) => {
       const propDate = parseDate(prop.added);
       
-      const matchType = !type || type === 'Any' || prop.type === type;
+      const matchType = type === 'Any' || prop.type === type;
       
-      const currentMinPrice = minPrice || 0;
-      const currentMaxPrice = maxPrice || 100000000; 
+      const currentMinPrice = minPrice === '' ? 0 : Number(minPrice);
+      const currentMaxPrice = maxPrice === '' ? 100000000 : Number(maxPrice); 
       const matchPrice = prop.price >= currentMinPrice && prop.price <= currentMaxPrice;
       
-      const currentMinBeds = minBeds || 0;
-      const currentMaxBeds = maxBeds || 50;
+      const currentMinBeds = minBeds === '' ? 0 : Number(minBeds);
+      const currentMaxBeds = maxBeds === '' ? 50 : Number(maxBeds);
       const matchBeds = prop.bedrooms >= currentMinBeds && prop.bedrooms <= currentMaxBeds;
       
-      const safePostcode = postcode || ''; 
-      const matchPostcode = safePostcode === '' || prop.location.toUpperCase().includes(safePostcode.toUpperCase());
+      const matchPostcode = postcode === '' || prop.location.toUpperCase().includes(postcode.toUpperCase());
       
       let matchDate = true;
-      if (dateAddedStart) matchDate = matchDate && propDate >= dateAddedStart;
-      if (dateAddedEnd) matchDate = matchDate && propDate <= dateAddedEnd;
+      if (dateAddedStart) matchDate = matchDate && propDate >= new Date(dateAddedStart);
+      if (dateAddedEnd) matchDate = matchDate && propDate <= new Date(dateAddedEnd);
 
       let matchGlobal = true;
       if (searchTerm && searchTerm.trim() !== '') {
@@ -85,15 +84,14 @@ const SearchPage = ({ favorites, addFavorite, removeFavorite, clearFavorites, se
   };
 
   const handleClear = () => {
-    setType(null);
-    setMinPrice(null);
-    setMaxPrice(null);
-    setMinBeds(null);
-    setMaxBeds(null);
+    setType('Any');
+    setMinPrice('');
+    setMaxPrice('');
+    setMinBeds('');
+    setMaxBeds('');
     setPostcode('');
-    setDateAddedStart(null);
-    setDateAddedEnd(null);
-    
+    setDateAddedStart('');
+    setDateAddedEnd('');
     setFilteredProperties(properties);
   };
 
@@ -123,88 +121,84 @@ const SearchPage = ({ favorites, addFavorite, removeFavorite, clearFavorites, se
          <h2 style={{ marginBottom: '20px' }}>Property Search</h2>
          <form onSubmit={handleSearch} className="search-grid">
           
-          <div className="form-group widget-group">
+          <div className="form-group">
               <label>Type</label>
-              <DropdownList 
-                data={['Any', 'House', 'Flat']}
-                value={type}
-                onChange={(value) => setType(value)}
-                placeholder="Select Type..."
-              />
+              <select value={type} onChange={(e) => setType(e.target.value)}>
+                <option value="Any">Any</option>
+                <option value="House">House</option>
+                <option value="Flat">Flat</option>
+              </select>
           </div>
           
-          <div className="form-group widget-group">
+          <div className="form-group">
               <label>Min Price</label>
-              <NumberPicker 
-                value={minPrice} 
-                onChange={value => setMinPrice(value)}
-                min={0}
-                step={10000}
-                format="£ #,###"
-                placeholder="e.g. 50,000"
+              <input 
+                type="number" 
+                placeholder="e.g. 50000"
+                value={minPrice}
+                onChange={(e) => setMinPrice(e.target.value)}
+                min="0"
               />
           </div>
           
-          <div className="form-group widget-group">
+          <div className="form-group">
               <label>Max Price</label>
-              <NumberPicker 
-                value={maxPrice} 
-                onChange={value => setMaxPrice(value)}
-                min={0}
-                step={10000}
-                format="£ #,###"
-                placeholder="e.g. 700,000"
+              <input 
+                type="number" 
+                placeholder="e.g. 700000"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(e.target.value)}
+                min="0"
               />
           </div>
           
-          <div className="form-group widget-group">
+          <div className="form-group">
               <label>Min Beds</label>
-              <NumberPicker 
-                value={minBeds} 
-                onChange={value => setMinBeds(value)}
-                min={0}
-                max={10}
+              <input 
+                type="number" 
                 placeholder="e.g. 1"
+                value={minBeds}
+                onChange={(e) => setMinBeds(e.target.value)}
+                min="0"
               />
           </div>
           
-          <div className="form-group widget-group">
+          <div className="form-group">
               <label>Max Beds</label>
-              <NumberPicker 
-                value={maxBeds} 
-                onChange={value => setMaxBeds(value)}
-                min={0}
-                max={10}
+              <input 
+                type="number" 
                 placeholder="e.g. 5"
+                value={maxBeds}
+                onChange={(e) => setMaxBeds(e.target.value)}
+                min="0"
               />
           </div>
           
-          <div className="form-group widget-group">
+          <div className="form-group">
             <label>Postcode</label>
-            <Combobox 
-              data={[...new Set(properties.map(p => p.location.split(' ').pop()))]} 
-              value={postcode}
-              onChange={value => setPostcode(value)}
-              placeholder="e.g. BR5"
-              suggest={true}
+            <input 
+                type="text" 
+                placeholder="e.g. BR1"
+                value={postcode}
+                onChange={(e) => setPostcode(e.target.value)}
             />
           </div>
           
-          <div className="form-group widget-group">
+          <div className="form-group">
               <label>Added After</label>
-              <DatePicker 
+              <input 
+                type="date" 
                 value={dateAddedStart}
-                onChange={value => setDateAddedStart(value)}
-                placeholder="Select date..."
+                onChange={(e) => setDateAddedStart(e.target.value)}
               />
           </div>
           
-          <div className="form-group widget-group">
+          <div className="form-group">
               <label>Added Before</label>
-              <DatePicker 
+              <input 
+                type="date" 
                 value={dateAddedEnd}
-                onChange={value => setDateAddedEnd(value)}
-                placeholder="Select date..."
+                onChange={(e) => setDateAddedEnd(e.target.value)}
               />
           </div>
           
