@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import SearchPage from './components/SearchPage';
 import PropertyPage from './components/PropertyPage';
@@ -7,10 +7,17 @@ import { FaBars, FaTimes, FaSearch } from 'react-icons/fa';
 import './index.css';
 
 function App() {
-  const [favorites, setFavorites] = useState([]);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [favorites, setFavorites] = useState(() => {
+    const savedFavorites = localStorage.getItem('my-estate-favorites');
+    return savedFavorites ? JSON.parse(savedFavorites) : [];
+  });
 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    localStorage.setItem('my-estate-favorites', JSON.stringify(favorites));
+  }, [favorites]);
 
   const addFavorite = (propertyId) => {
     if (!favorites.some(fav => fav.id === propertyId)) {
