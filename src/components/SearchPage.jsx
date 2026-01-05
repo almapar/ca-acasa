@@ -1,22 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import propertiesData from '../data/properties.json';
-import { FaSearch, FaTimes, FaTrash, FaHeart } from 'react-icons/fa';
+import { FaSearch, FaTimes, FaHeart } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import { DropdownList, NumberPicker, DatePicker } from 'react-widgets';
 
-// Receive props from App.jsx
 const SearchPage = ({ favorites, addFavorite, removeFavorite, clearFavorites }) => {
   const [properties, setProperties] = useState([]);
   const [filteredProperties, setFilteredProperties] = useState([]);
   
-  // Search States
+  // search states
   const [type, setType] = useState('Any');
-  const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(2000000);
-  const [minBeds, setMinBeds] = useState(0);
-  const [maxBeds, setMaxBeds] = useState(10);
-  const [postcode, setPostcode] = useState('');
-  const [dateAddedStart, setDateAddedStart] = useState('');
-  const [dateAddedEnd, setDateAddedEnd] = useState('');
+  const [minPrice, setMinPrice] = useState(null);
+  const [maxPrice, setMaxPrice] = useState(null);
+  const [minBeds, setMinBeds] = useState(null);
+  const [maxBeds, setMaxBeds] = useState(null);
+  const [postcode, setPostcode] = useState(null);
+  
+  // date states (now date objects instead of strings)
+  const [dateAddedStart, setDateAddedStart] = useState(null);
+  const [dateAddedEnd, setDateAddedEnd] = useState(null);
+  
+  // drag state
+  const [isDragOver, setIsDragOver] = useState(false);
 
   useEffect(() => {
     setProperties(propertiesData.properties);
@@ -35,146 +40,227 @@ const SearchPage = ({ favorites, addFavorite, removeFavorite, clearFavorites }) 
     e.preventDefault();
     const results = properties.filter((prop) => {
       const propDate = parseDate(prop.added);
-      const matchType = type === 'Any' || prop.type === type;
-      const matchPrice = prop.price >= Number(minPrice) && prop.price <= Number(maxPrice);
-      const matchBeds = prop.bedrooms >= Number(minBeds) && prop.bedrooms <= Number(maxBeds);
-      const matchPostcode = postcode === '' || prop.location.includes(postcode.toUpperCase());
+      
+      const matchType = !type || type === 'Any' || prop.type === type;
+      
+      const currentMinPrice = minPrice || 0;
+      const currentMaxPrice = maxPrice || 100000000; 
+      const matchPrice = prop.price >= currentMinPrice && prop.price <= currentMaxPrice;
+      
+      const currentMinBeds = minBeds || 0;
+      const currentMaxBeds = maxBeds || 50;
+      const matchBeds = prop.bedrooms >= currentMinBeds && prop.bedrooms <= currentMaxBeds;
+      
+      const matchPostcode = postcode === '' || prop.location.toUpperCase().includes(postcode.toUpperCase());
+      
+      // date filter logic for react-widgets (handles date objects)
       let matchDate = true;
-      if (dateAddedStart) matchDate = matchDate && propDate >= new Date(dateAddedStart);
-      if (dateAddedEnd) matchDate = matchDate && propDate <= new Date(dateAddedEnd);
+      if (dateAddedStart) {
+        matchDate = matchDate && propDate >= dateAddedStart;
+      }
+      if (dateAddedEnd) {
+        matchDate = matchDate && propDate <= dateAddedEnd;
+      }
+
       return matchType && matchPrice && matchBeds && matchPostcode && matchDate;
     });
     setFilteredProperties(results);
   };
 
   const handleClear = () => {
-    setType('Any');
-    setMinPrice(0);
-    setMaxPrice(2000000);
-    setMinBeds(0);
-    setMaxBeds(10);
+    setType(null);
+    setMinPrice(null);
+    setMaxPrice(null);
+    setMinBeds(null);
+    setMaxBeds(null);
     setPostcode('');
-    setDateAddedStart('');
-    setDateAddedEnd('');
+    setDateAddedStart(null);
+    setDateAddedEnd(null);
     setFilteredProperties(properties);
   };
 
-  // --- DRAG AND DROP HANDLERS ---
-  
+  // drag handlers
   const handleDragStart = (e, propertyId) => {
-    // Store the ID of the item being dragged
     e.dataTransfer.setData("text/plain", propertyId);
   };
 
   const handleDrop = (e) => {
     e.preventDefault();
+    setIsDragOver(false);
     const propertyId = e.dataTransfer.getData("text/plain");
-    // Logic: If we drop here, we ADD to favorites
     addFavorite(propertyId);
   };
 
   const handleDragOver = (e) => {
-    // Necessary to allow dropping
     e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragOver(false);
   };
 
   return (
-    <div style={{ padding: '20px', display: 'flex', gap: '20px', flexDirection: 'column' }}>
-      
-      {/* Container for Search + Favourites Sidebar */}
-      <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
-        
-        {/* LEFT COLUMN: Search Form */}
-        <div style={{ flex: 3 }}>
-           <h2>Property Search</h2>
-           <form onSubmit={handleSearch} style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', 
-            gap: '10px', 
-            background: '#f4f4f4', 
-            padding: '15px', 
-            borderRadius: '8px'
-          }}>
-            {/* ... (Existing Inputs - keeping them brief for copy/paste safety) ... */}
-            <div><label>Type</label><select value={type} onChange={e => setType(e.target.value)} style={{width:'100%'}}><option>Any</option><option>House</option><option>Flat</option></select></div>
-            <div><label>Min Price</label><input type="number" value={minPrice} onChange={e => setMinPrice(e.target.value)} style={{width:'100%'}}/></div>
-            <div><label>Max Price</label><input type="number" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} style={{width:'100%'}}/></div>
-            <div><label>Min Beds</label><input type="number" value={minBeds} onChange={e => setMinBeds(e.target.value)} style={{width:'100%'}}/></div>
-            <div><label>Max Beds</label><input type="number" value={maxBeds} onChange={e => setMaxBeds(e.target.value)} style={{width:'100%'}}/></div>
-            <div><label>Postcode</label><input value={postcode} onChange={e => setPostcode(e.target.value)} style={{width:'100%'}}/></div>
-            <div><label>After</label><input type="date" value={dateAddedStart} onChange={e => setDateAddedStart(e.target.value)} style={{width:'100%'}}/></div>
-            <div><label>Before</label><input type="date" value={dateAddedEnd} onChange={e => setDateAddedEnd(e.target.value)} style={{width:'100%'}}/></div>
-            
-            <div style={{ gridColumn: '1 / -1', marginTop:'10px' }}>
-              <button type="submit" style={{ marginRight:'10px', padding:'8px 16px', background:'#007bff', color:'white', border:'none', borderRadius:'4px' }}>Search</button>
-              <button type="button" onClick={handleClear} style={{ padding:'8px 16px', background:'#6c757d', color:'white', border:'none', borderRadius:'4px' }}>Clear</button>
-            </div>
-          </form>
-        </div>
+    <div className="search-container">
+      {/* LEFT: search form */}
+      <div className="search-form-panel">
+         <h2 style={{ marginBottom: '20px' }}>Property Search</h2>
+         <form onSubmit={handleSearch} className="search-grid">
+          
+          <div className="form-group widget-group">
+              <label>Type</label>
+              <DropdownList 
+                data={['Any', 'House', 'Flat']}
+                value={type}
+                onChange={(value) => setType(value)}
+                placeholder='Select Type...'
+              />
+          </div>
+          
+          <div className="form-group widget-group">
+              <label>Min Price</label>
+              <NumberPicker 
+                value={minPrice} 
+                onChange={value => setMinPrice(value)}
+                min={0}
+                step={10000}
+                format="£ #,###"
+                placeholder='e.g. 50000'
+              />
+          </div>
+          
+          <div className="form-group widget-group">
+              <label>Max Price</label>
+              <NumberPicker 
+                value={maxPrice} 
+                onChange={value => setMaxPrice(value)}
+                min={0}
+                step={10000}
+                format="£ #,###"
+                placeholder="e.g. 700000"
+              />
+          </div>
+          
+          <div className="form-group widget-group">
+              <label>Min Beds</label>
+              <NumberPicker 
+                value={minBeds} 
+                onChange={value => setMinBeds(value)}
+                min={0}
+                max={10}
+                placeholder="e.g. 1"
+              />
+          </div>
+          
+          <div className="form-group widget-group">
+              <label>Max Beds</label>
+              <NumberPicker 
+                value={maxBeds} 
+                onChange={value => setMaxBeds(value)}
+                min={0}
+                max={10}
+                placeholder="e.g. 4"
+              />
+          </div>
+          
+          <div className="form-group">
+              <label>Postcode</label>
+              <input 
+                value={postcode} 
+                onChange={e => setPostcode(e.target.value)} 
+                placeholder="e.g. BR1"
+                className="rw-widget-input rw-widget-picker rw-widget-container" // fake widget class to be consistent
+                style={{ border: '1px solid #ccc', borderRadius: '4px', padding: '7px' }}
+              />
+          </div>
+          
+          <div className="form-group widget-group">
+              <label>Added After</label>
+              <DatePicker 
+                value={dateAddedStart}
+                onChange={value => setDateAddedStart(value)}
+                placeholder="Select date..."
+              />
+          </div>
+          
+          <div className="form-group widget-group">
+              <label>Added Before</label>
+              <DatePicker 
+                value={dateAddedEnd}
+                onChange={value => setDateAddedEnd(value)}
+                placeholder="Select date..."
+              />
+          </div>
+          
+          <div className="btn-group">
+            <button type="submit" className="btn-primary"><FaSearch /> Search</button>
+            <button type="button" onClick={handleClear} className="btn-secondary"><FaTimes /> Clear</button>
+          </div>
+        </form>
+      </div>
 
-        {/* RIGHT COLUMN: Favourites Drop Zone */}
-        <div 
-          onDrop={handleDrop} 
-          onDragOver={handleDragOver}
-          style={{ 
-            flex: 1, 
-            minWidth: '250px', 
-            background: '#e9ecef', 
-            padding: '15px', 
-            borderRadius: '8px', 
-            border: '2px dashed #6c757d'
-          }}
-        >
-          <h3 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-             <FaHeart color="red" /> Favourites
-          </h3>
-          <p style={{ fontSize: '0.8rem', color: '#666' }}>Drag properties here to save</p>
-          
-          {favorites.length === 0 && <p>No favorites yet.</p>}
-          
-          <ul style={{ listStyle: 'none', padding: 0 }}>
-            {favorites.map(fav => (
-              <li key={fav.id} style={{ background: 'white', marginBottom: '10px', padding: '10px', borderRadius: '4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.9rem' }}>{fav.location}</span>
-                <button onClick={() => removeFavorite(fav.id)} style={{ border:'none', background:'transparent', color:'red', cursor:'pointer' }}>
-                  <FaTimes />
-                </button>
-              </li>
-            ))}
-          </ul>
-          
-          {favorites.length > 0 && (
-            <button onClick={clearFavorites} style={{ width: '100%', padding: '5px', background: '#dc3545', color: 'white', border: 'none', borderRadius: '4px' }}>
-              Clear All
-            </button>
-          )}
+      {/* RIGHT: favorites panel */}
+      <div 
+        onDrop={handleDrop} 
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        className={`favorites-panel ${isDragOver ? 'drag-over' : ''}`}
+      >
+        <h3 style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: 0 }}>
+           <FaHeart color="#ef4444" /> Favourites
+        </h3>
+        <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '15px' }}>
+          Drag properties here to save
+        </p>
+        
+        {favorites.length === 0 && <p style={{fontStyle:'italic', color:'#94a3b8'}}>No favorites yet.</p>}
+        
+        <div className="fav-list">
+          {favorites.map(fav => (
+            <div key={fav.id} className="fav-item">
+              <span>{fav.location}</span>
+              <button onClick={() => removeFavorite(fav.id)} style={{ border:'none', background:'transparent', color:'#ef4444', cursor:'pointer' }}>
+                <FaTimes />
+              </button>
+            </div>
+          ))}
         </div>
+        
+        {favorites.length > 0 && (
+          <button onClick={clearFavorites} style={{ width: '100%', marginTop:'10px', padding: '8px', background: '#fee2e2', color: '#dc2626', border: 'none', borderRadius: '6px', cursor:'pointer' }}>
+            Clear All
+          </button>
+        )}
       </div>
 
       {/* RESULTS GRID */}
-      <div style={{ marginTop: '20px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+      <div className="results-container">
         {filteredProperties.map(property => {
           const isFav = favorites.some(f => f.id === property.id);
           return (
             <div 
               key={property.id} 
+              className="property-card"
               draggable 
               onDragStart={(e) => handleDragStart(e, property.id)}
-              style={{ border: '1px solid #ddd', borderRadius: '8px', overflow: 'hidden', background: 'white' }}
             >
-              <img src={property.picture} alt="prop" style={{ width: '100%', height: '200px', objectFit: 'cover' }} />
-              <div style={{ padding: '15px' }}>
-                <h3>£{property.price.toLocaleString()}</h3>
-                <p>{property.type} - {property.bedrooms} Beds</p>
-                <p>{property.location}</p>
-                <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
-                  <Link to={`/property/${property.id}`} style={{ textDecoration:'none', color:'#007bff' }}>View Details</Link>
+              <img src={property.picture} alt="prop" />
+              <div className="card-content">
+                <h3 className="card-price">£{property.price.toLocaleString()}</h3>
+                <p className="card-details">
+                    <strong>{property.type}</strong> • {property.bedrooms} Beds
+                </p>
+                <p className="card-details">{property.location}</p>
+                
+                <div className="card-actions">
+                  <Link to={`/property/${property.id}`} style={{ textDecoration:'none', color:'#2563eb', fontWeight:'600' }}>
+                    View Details
+                  </Link>
                   
-                  {/* Heart Button Logic */}
                   {isFav ? (
-                     <button disabled style={{ border:'none', background:'transparent', color:'red' }}><FaHeart /></button>
+                     <button disabled style={{ border:'none', background:'transparent', color:'#ef4444' }}><FaHeart size={20}/></button>
                   ) : (
-                     <button onClick={() => addFavorite(property.id)} style={{ border:'none', background:'transparent', color:'#ccc', cursor:'pointer' }}><FaHeart /></button>
+                     <button onClick={() => addFavorite(property.id)} style={{ border:'none', background:'transparent', color:'#cbd5e1', cursor:'pointer' }}><FaHeart size={20}/></button>
                   )}
                 </div>
               </div>
