@@ -10,6 +10,8 @@ function App() {
   const [favorites, setFavorites] = useState([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  const [searchTerm, setSearchTerm] = useState('');
+
   const addFavorite = (propertyId) => {
     if (!favorites.some(fav => fav.id === propertyId)) {
       const propertyToAdd = propertiesData.properties.find(p => p.id === propertyId);
@@ -31,19 +33,11 @@ function App() {
     <Router>
       <div className="App">
         <div className="app-container">
-            {/* NEW NAVBAR */}
             <nav className="navbar">
-              {/* 1. Logo (Left) */}
               <Link to="/" className="nav-logo" onClick={() => setIsMenuOpen(false)}>
                 <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  width="24" height="24" 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  strokeWidth="2" 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
+                  xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" 
+                  fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" 
                   className="lucide lucide-house-plus"
                 >
                   <path d="M12.35 21H5a2 2 0 0 1-2-2v-9a2 2 0 0 1 .71-1.53l7-6a2 2 0 0 1 2.58 0l7 6A2 2 0 0 1 21 10v2.35"/>
@@ -56,7 +50,12 @@ function App() {
 
               <div className="nav-search">
                  <FaSearch className="search-icon" />
-                 <input type="text" placeholder="Quick Search..." />
+                 <input 
+                    type="text" 
+                    placeholder="Quick Search (Location, Description)..." 
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                 />
               </div>
 
               <div className="menu-icon" onClick={() => setIsMenuOpen(!isMenuOpen)}>
@@ -66,8 +65,8 @@ function App() {
               <div className={isMenuOpen ? "nav-menu active" : "nav-menu"}>
                 <Link to="/" className="nav-item" onClick={() => setIsMenuOpen(false)}>Home</Link>
                 <Link to="/search" className="nav-item" onClick={() => setIsMenuOpen(false)}>Properties</Link>
-                <Link to="/search" className="nav-item" onClick={() => setIsMenuOpen(false)}>About Us</Link>
-                <Link to="/search" className="nav-item" onClick={() => setIsMenuOpen(false)}>Contact</Link>
+                <Link to="#" className="nav-item" onClick={() => setIsMenuOpen(false)}>About</Link>
+                <Link to="#" className="nav-item" onClick={() => setIsMenuOpen(false)}>Contact</Link>
               </div>
             </nav>
 
@@ -77,7 +76,8 @@ function App() {
                   favorites={favorites} 
                   addFavorite={addFavorite} 
                   removeFavorite={removeFavorite} 
-                  clearFavorites={clearFavorites} 
+                  clearFavorites={clearFavorites}
+                  searchTerm={searchTerm} 
                 />
               } />
               <Route path="/search" element={
@@ -85,7 +85,8 @@ function App() {
                   favorites={favorites} 
                   addFavorite={addFavorite} 
                   removeFavorite={removeFavorite} 
-                  clearFavorites={clearFavorites} 
+                  clearFavorites={clearFavorites}
+                  searchTerm={searchTerm}
                 />
               } />
               <Route path="/property/:id" element={

@@ -4,7 +4,7 @@ import { FaSearch, FaTimes, FaHeart } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { DropdownList, NumberPicker, DatePicker, Combobox } from 'react-widgets';
 
-const SearchPage = ({ favorites, addFavorite, removeFavorite, clearFavorites }) => {
+const SearchPage = ({ favorites, addFavorite, removeFavorite, clearFavorites, searchTerm }) => {
   const [properties, setProperties] = useState([]);
   const [filteredProperties, setFilteredProperties] = useState([]);
   
@@ -14,14 +14,30 @@ const SearchPage = ({ favorites, addFavorite, removeFavorite, clearFavorites }) 
   const [minBeds, setMinBeds] = useState(null);
   const [maxBeds, setMaxBeds] = useState(null);
   const [postcode, setPostcode] = useState('');
+  
   const [dateAddedStart, setDateAddedStart] = useState(null);
   const [dateAddedEnd, setDateAddedEnd] = useState(null);
+  
   const [isDragOver, setIsDragOver] = useState(false);
 
   useEffect(() => {
     setProperties(propertiesData.properties);
     setFilteredProperties(propertiesData.properties);
   }, []);
+
+  useEffect(() => {
+    if (searchTerm && searchTerm.trim() !== '') {
+        const lowerTerm = searchTerm.toLowerCase();
+        const results = properties.filter(p => 
+            p.location.toLowerCase().includes(lowerTerm) || 
+            p.description.toLowerCase().includes(lowerTerm) ||
+            p.type.toLowerCase().includes(lowerTerm)
+        );
+        setFilteredProperties(results);
+    } else {
+        setFilteredProperties(properties);
+    }
+  }, [searchTerm, properties]);
 
   const parseDate = (dateObj) => {
     const months = {
@@ -33,23 +49,38 @@ const SearchPage = ({ favorites, addFavorite, removeFavorite, clearFavorites }) 
 
   const handleSearch = (e) => {
     e.preventDefault();
+    
     const results = properties.filter((prop) => {
       const propDate = parseDate(prop.added);
+      
       const matchType = !type || type === 'Any' || prop.type === type;
+      
       const currentMinPrice = minPrice || 0;
       const currentMaxPrice = maxPrice || 100000000; 
       const matchPrice = prop.price >= currentMinPrice && prop.price <= currentMaxPrice;
+      
       const currentMinBeds = minBeds || 0;
       const currentMaxBeds = maxBeds || 50;
       const matchBeds = prop.bedrooms >= currentMinBeds && prop.bedrooms <= currentMaxBeds;
-      const matchPostcode = postcode === '' || prop.location.toUpperCase().includes(postcode.toUpperCase());
+      
+      const safePostcode = postcode || ''; 
+      const matchPostcode = safePostcode === '' || prop.location.toUpperCase().includes(safePostcode.toUpperCase());
       
       let matchDate = true;
       if (dateAddedStart) matchDate = matchDate && propDate >= dateAddedStart;
       if (dateAddedEnd) matchDate = matchDate && propDate <= dateAddedEnd;
 
-      return matchType && matchPrice && matchBeds && matchPostcode && matchDate;
+      let matchGlobal = true;
+      if (searchTerm && searchTerm.trim() !== '') {
+          const lowerTerm = searchTerm.toLowerCase();
+          matchGlobal = prop.location.toLowerCase().includes(lowerTerm) || 
+                        prop.description.toLowerCase().includes(lowerTerm) ||
+                        prop.type.toLowerCase().includes(lowerTerm);
+      }
+
+      return matchType && matchPrice && matchBeds && matchPostcode && matchDate && matchGlobal;
     });
+    
     setFilteredProperties(results);
   };
 
@@ -62,10 +93,10 @@ const SearchPage = ({ favorites, addFavorite, removeFavorite, clearFavorites }) 
     setPostcode('');
     setDateAddedStart(null);
     setDateAddedEnd(null);
+    
     setFilteredProperties(properties);
   };
 
-  // Drag Handlers
   const handleDragStart = (e, propertyId) => {
     e.dataTransfer.setData("text/plain", propertyId);
   };
@@ -217,9 +248,9 @@ const SearchPage = ({ favorites, addFavorite, removeFavorite, clearFavorites }) 
         )}
       </div>
 
-      {/* RESULTS GRID */}
       <div className="results-container">
-        {filteredProperties.map(property => {
+        {filteredProperties.length === 0 ? <p>No results found.</p> :
+        filteredProperties.map(property => {
           const isFav = favorites.some(f => f.id === property.id);
           return (
             <div 
