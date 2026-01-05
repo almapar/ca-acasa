@@ -8,15 +8,15 @@ const SearchPage = ({ favorites, addFavorite, removeFavorite, clearFavorites }) 
   const [properties, setProperties] = useState([]);
   const [filteredProperties, setFilteredProperties] = useState([]);
   
-  // search states
-  const [type, setType] = useState('Any');
+  // state: initialize to null for placeholders to work
+  const [type, setType] = useState(null);
   const [minPrice, setMinPrice] = useState(null);
   const [maxPrice, setMaxPrice] = useState(null);
   const [minBeds, setMinBeds] = useState(null);
   const [maxBeds, setMaxBeds] = useState(null);
-  const [postcode, setPostcode] = useState(null);
+  const [postcode, setPostcode] = useState('');
   
-  // date states (now date objects instead of strings)
+  // date states
   const [dateAddedStart, setDateAddedStart] = useState(null);
   const [dateAddedEnd, setDateAddedEnd] = useState(null);
   
@@ -53,7 +53,6 @@ const SearchPage = ({ favorites, addFavorite, removeFavorite, clearFavorites }) 
       
       const matchPostcode = postcode === '' || prop.location.toUpperCase().includes(postcode.toUpperCase());
       
-      // date filter logic for react-widgets (handles date objects)
       let matchDate = true;
       if (dateAddedStart) {
         matchDate = matchDate && propDate >= dateAddedStart;
@@ -79,7 +78,6 @@ const SearchPage = ({ favorites, addFavorite, removeFavorite, clearFavorites }) 
     setFilteredProperties(properties);
   };
 
-  // drag handlers
   const handleDragStart = (e, propertyId) => {
     e.dataTransfer.setData("text/plain", propertyId);
   };
@@ -113,7 +111,7 @@ const SearchPage = ({ favorites, addFavorite, removeFavorite, clearFavorites }) 
                 data={['Any', 'House', 'Flat']}
                 value={type}
                 onChange={(value) => setType(value)}
-                placeholder='Select Type...'
+                placeholder="Select Type..."
               />
           </div>
           
@@ -125,7 +123,7 @@ const SearchPage = ({ favorites, addFavorite, removeFavorite, clearFavorites }) 
                 min={0}
                 step={10000}
                 format="£ #,###"
-                placeholder='e.g. 50000'
+                placeholder="e.g. 50,000"
               />
           </div>
           
@@ -137,7 +135,7 @@ const SearchPage = ({ favorites, addFavorite, removeFavorite, clearFavorites }) 
                 min={0}
                 step={10000}
                 format="£ #,###"
-                placeholder="e.g. 700000"
+                placeholder="e.g. 700,000"
               />
           </div>
           
@@ -159,21 +157,20 @@ const SearchPage = ({ favorites, addFavorite, removeFavorite, clearFavorites }) 
                 onChange={value => setMaxBeds(value)}
                 min={0}
                 max={10}
-                placeholder="e.g. 4"
+                placeholder="e.g. 5"
               />
           </div>
           
           <div className="form-group widget-group">
-    <label>Postcode</label>
-    {/* suggests existing postcodes but also allows typing new ones */}
-    <Combobox 
-  data={[...new Set(properties.map(p => p.location.split(' ').pop()))]} // extracts unique last words from addresses
-  value={postcode}
-  onChange={value => setPostcode(value)}
-  placeholder="e.g. BR5"
-  suggest={true}
-/>
-</div>
+            <label>Postcode</label>
+            <Combobox 
+              data={[...new Set(properties.map(p => p.location.split(' ').pop()))]} 
+              value={postcode}
+              onChange={value => setPostcode(value)}
+              placeholder="e.g. BR5"
+              suggest={true}
+            />
+          </div>
           
           <div className="form-group widget-group">
               <label>Added After</label>
