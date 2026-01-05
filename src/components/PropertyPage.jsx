@@ -186,9 +186,6 @@ const PropertyPage = ({ favorites, addFavorite, removeFavorite }) => {
                    alt="Floor Plan" 
                    style={{ width: '100%', maxWidth: '600px', border: '1px solid var(--border-color)', borderRadius: '8px' }} 
                  />
-                 <p style={{ textAlign: 'center', color: 'var(--primary-color)', marginTop: '10px', fontSize: '0.9rem', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '5px' }}>
-                    <FaSearchPlus /> Click to enlarge
-                 </p>
               </div>
             </>
           )}
