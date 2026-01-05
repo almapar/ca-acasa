@@ -8,19 +8,14 @@ const SearchPage = ({ favorites, addFavorite, removeFavorite, clearFavorites }) 
   const [properties, setProperties] = useState([]);
   const [filteredProperties, setFilteredProperties] = useState([]);
   
-  // state: initialize to null for placeholders to work
   const [type, setType] = useState(null);
   const [minPrice, setMinPrice] = useState(null);
   const [maxPrice, setMaxPrice] = useState(null);
   const [minBeds, setMinBeds] = useState(null);
   const [maxBeds, setMaxBeds] = useState(null);
   const [postcode, setPostcode] = useState('');
-  
-  // date states
   const [dateAddedStart, setDateAddedStart] = useState(null);
   const [dateAddedEnd, setDateAddedEnd] = useState(null);
-  
-  // drag state
   const [isDragOver, setIsDragOver] = useState(false);
 
   useEffect(() => {
@@ -40,26 +35,18 @@ const SearchPage = ({ favorites, addFavorite, removeFavorite, clearFavorites }) 
     e.preventDefault();
     const results = properties.filter((prop) => {
       const propDate = parseDate(prop.added);
-      
       const matchType = !type || type === 'Any' || prop.type === type;
-      
       const currentMinPrice = minPrice || 0;
       const currentMaxPrice = maxPrice || 100000000; 
       const matchPrice = prop.price >= currentMinPrice && prop.price <= currentMaxPrice;
-      
       const currentMinBeds = minBeds || 0;
       const currentMaxBeds = maxBeds || 50;
       const matchBeds = prop.bedrooms >= currentMinBeds && prop.bedrooms <= currentMaxBeds;
-      
       const matchPostcode = postcode === '' || prop.location.toUpperCase().includes(postcode.toUpperCase());
       
       let matchDate = true;
-      if (dateAddedStart) {
-        matchDate = matchDate && propDate >= dateAddedStart;
-      }
-      if (dateAddedEnd) {
-        matchDate = matchDate && propDate <= dateAddedEnd;
-      }
+      if (dateAddedStart) matchDate = matchDate && propDate >= dateAddedStart;
+      if (dateAddedEnd) matchDate = matchDate && propDate <= dateAddedEnd;
 
       return matchType && matchPrice && matchBeds && matchPostcode && matchDate;
     });
@@ -78,6 +65,7 @@ const SearchPage = ({ favorites, addFavorite, removeFavorite, clearFavorites }) 
     setFilteredProperties(properties);
   };
 
+  // Drag Handlers
   const handleDragStart = (e, propertyId) => {
     e.dataTransfer.setData("text/plain", propertyId);
   };
@@ -100,7 +88,6 @@ const SearchPage = ({ favorites, addFavorite, removeFavorite, clearFavorites }) 
 
   return (
     <div className="search-container">
-      {/* LEFT: search form */}
       <div className="search-form-panel">
          <h2 style={{ marginBottom: '20px' }}>Property Search</h2>
          <form onSubmit={handleSearch} className="search-grid">
@@ -197,7 +184,6 @@ const SearchPage = ({ favorites, addFavorite, removeFavorite, clearFavorites }) 
         </form>
       </div>
 
-      {/* RIGHT: favorites panel */}
       <div 
         onDrop={handleDrop} 
         onDragOver={handleDragOver}
