@@ -160,7 +160,7 @@ const PropertyPage = ({ favorites, addFavorite, removeFavorite }) => {
         </div>
       </div>
 
-      <div className="property-info-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '40px' }}>
+      <div className="property-info-grid">
         <div className="left-col">
           <div className="specs" style={{ display: 'flex', gap: '20px', padding: '20px', background: 'var(--card-bg)', borderRadius: '12px', border: '1px solid var(--border-color)', marginBottom: '30px' }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><FaBed color="var(--primary-color)"/> <strong>{property.bedrooms}</strong> Bedrooms</span>

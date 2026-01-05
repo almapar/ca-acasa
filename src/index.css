@@ -257,8 +257,6 @@ body {
   color: var(--primary-hover);
 }
 
-
-
 .nav-btn-contact {
   background-color: transparent;
   border: 2px solid var(--primary-color);
@@ -384,6 +382,33 @@ body {
   border-radius: 6px;
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--border-color);
+}
+
+.property-info-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 30px;
+  margin-top: 20px;
+}
+
+.agent-card {
+  padding: 25px;
+  background: var(--card-bg);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-md);
+}
+
+@media (min-width: 768px) {
+  .property-info-grid {
+      grid-template-columns: 2fr 1fr;
+      gap: 40px;
+  }
+
+  .agent-card {
+      position: sticky;
+      top: 20px;
+  }
 }
 
 .results-container {
