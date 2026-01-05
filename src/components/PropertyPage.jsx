@@ -38,7 +38,6 @@ const PropertyPage = ({ favorites, addFavorite, removeFavorite }) => {
 
   const thumbnailImages = [property.picture, ...(property.images || [])];
 
-
   const handleThumbnailClick = (imgUrl, index) => {
     setSelectedMainImage(imgUrl);
     setCurrentGalleryIndex(index);
@@ -50,14 +49,14 @@ const PropertyPage = ({ favorites, addFavorite, removeFavorite }) => {
   };
 
   const handleNextImage = (e) => {
-    e.stopPropagation();
+    e.stopPropagation(); 
     const nextIndex = (currentGalleryIndex + 1) % thumbnailImages.length;
     setCurrentGalleryIndex(nextIndex);
     setSelectedMainImage(thumbnailImages[nextIndex]);
   };
 
   const handlePrevImage = (e) => {
-    e.stopPropagation();
+    e.stopPropagation(); 
     const prevIndex = (currentGalleryIndex - 1 + thumbnailImages.length) % thumbnailImages.length;
     setCurrentGalleryIndex(prevIndex);
     setSelectedMainImage(thumbnailImages[prevIndex]);
@@ -91,15 +90,9 @@ const PropertyPage = ({ favorites, addFavorite, removeFavorite }) => {
           
           {thumbnailImages.length > 1 && (
             <button 
+              className="image-nav-btn"
               onClick={handlePrevImage}
-              style={{
-                position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)',
-                background: 'rgba(0, 0, 0, 0.5)', color: 'white', border: 'none', borderRadius: '50%',
-                width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                cursor: 'pointer', fontSize: '1.2rem', zIndex: 10
-              }}
-              onMouseOver={(e) => e.target.style.background = 'var(--primary-color)'}
-              onMouseOut={(e) => e.target.style.background = 'rgba(0, 0, 0, 0.5)'}
+              style={{ left: '15px' }}
             >
               <FaChevronLeft />
             </button>
@@ -107,15 +100,9 @@ const PropertyPage = ({ favorites, addFavorite, removeFavorite }) => {
 
           {thumbnailImages.length > 1 && (
             <button 
+              className="image-nav-btn"
               onClick={handleNextImage}
-              style={{
-                position: 'absolute', right: '15px', top: '50%', transform: 'translateY(-50%)',
-                background: 'rgba(0, 0, 0, 0.5)', color: 'white', border: 'none', borderRadius: '50%',
-                width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                cursor: 'pointer', fontSize: '1.2rem', zIndex: 10
-              }}
-              onMouseOver={(e) => e.target.style.background = 'var(--primary-color)'}
-              onMouseOut={(e) => e.target.style.background = 'rgba(0, 0, 0, 0.5)'}
+              style={{ right: '15px' }}
             >
               <FaChevronRight />
             </button>
@@ -199,6 +186,9 @@ const PropertyPage = ({ favorites, addFavorite, removeFavorite }) => {
                    alt="Floor Plan" 
                    style={{ width: '100%', maxWidth: '600px', border: '1px solid var(--border-color)', borderRadius: '8px' }} 
                  />
+                 <p style={{ textAlign: 'center', color: 'var(--primary-color)', marginTop: '10px', fontSize: '0.9rem', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '5px' }}>
+                    <FaSearchPlus /> Click to enlarge
+                 </p>
               </div>
             </>
           )}
