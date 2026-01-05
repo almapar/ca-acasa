@@ -3,13 +3,12 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import SearchPage from './components/SearchPage';
 import PropertyPage from './components/PropertyPage';
 import propertiesData from './data/properties.json';
+import './index.css';
 
 function App() {
   const [favorites, setFavorites] = useState([]);
 
-  // Function to add a property to favorites (prevents duplicates)
   const addFavorite = (propertyId) => {
-    // Check if already exists
     if (!favorites.some(fav => fav.id === propertyId)) {
       const propertyToAdd = propertiesData.properties.find(p => p.id === propertyId);
       if (propertyToAdd) {
@@ -18,12 +17,10 @@ function App() {
     }
   };
 
-  // Function to remove a single property
   const removeFavorite = (propertyId) => {
     setFavorites(favorites.filter(fav => fav.id !== propertyId));
   };
 
-  // Function to clear all favorites
   const clearFavorites = () => {
     setFavorites([]);
   };
@@ -31,36 +28,60 @@ function App() {
   return (
     <Router>
       <div className="App">
-        <nav style={{ padding: '1rem', background: '#333', color: '#fff', marginBottom: '20px' }}>
-          <Link to="/" style={{ color: '#fff', marginRight: '20px', textDecoration: 'none', fontWeight: 'bold' }}>Estate Agent</Link>
-          <Link to="/search" style={{ color: '#fff', textDecoration: 'none' }}>Search Properties</Link>
-        </nav>
+        <div className="app-container">
+            <nav className="navbar">
+              <Link to="/" className="nav-logo">
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  width="24" 
+                  height="24" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="2" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  className="lucide lucide-house-plus"
+                >
+                  <path d="M12.35 21H5a2 2 0 0 1-2-2v-9a2 2 0 0 1 .71-1.53l7-6a2 2 0 0 1 2.58 0l7 6A2 2 0 0 1 21 10v2.35"/>
+                  <path d="M14.8 12.4A1 1 0 0 0 14 12h-4a1 1 0 0 0-1 1v8"/>
+                  <path d="M15 18h6"/>
+                  <path d="M18 15v6"/>
+                </svg>
+                <span>ca acasă</span>
+              </Link>
 
-        <Routes>
-          <Route path="/" element={
-            <SearchPage 
-              favorites={favorites} 
-              addFavorite={addFavorite} 
-              removeFavorite={removeFavorite} 
-              clearFavorites={clearFavorites} 
-            />
-          } />
-          <Route path="/search" element={
-            <SearchPage 
-              favorites={favorites} 
-              addFavorite={addFavorite} 
-              removeFavorite={removeFavorite} 
-              clearFavorites={clearFavorites} 
-            />
-          } />
-          <Route path="/property/:id" element={
-            <PropertyPage 
-              favorites={favorites}
-              addFavorite={addFavorite}
-              removeFavorite={removeFavorite} 
-            />
-          } />
-        </Routes>
+              <div className="nav-links">
+                <Link to="/search" className="nav-item">Nowhere else like home.</Link>
+              </div>
+            </nav>
+
+            <Routes>
+              <Route path="/" element={
+                <SearchPage 
+                  favorites={favorites} 
+                  addFavorite={addFavorite} 
+                  removeFavorite={removeFavorite} 
+                  clearFavorites={clearFavorites} 
+                />
+              } />
+              <Route path="/search" element={
+                <SearchPage 
+                  favorites={favorites} 
+                  addFavorite={addFavorite} 
+                  removeFavorite={removeFavorite} 
+                  clearFavorites={clearFavorites} 
+                />
+              } />
+              <Route path="/property/:id" element={
+                <PropertyPage 
+                  favorites={favorites}
+                  addFavorite={addFavorite}
+                  removeFavorite={removeFavorite} 
+                />
+              } />
+            </Routes>
+        </div>
       </div>
     </Router>
   );
