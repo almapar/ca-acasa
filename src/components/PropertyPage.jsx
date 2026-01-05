@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import propertiesData from '../data/properties.json';
 import { FaHeart, FaBed, FaMapMarkerAlt, FaArrowLeft, FaRulerCombined, FaSearchPlus } from 'react-icons/fa';
@@ -8,8 +8,17 @@ const PropertyPage = ({ favorites, addFavorite, removeFavorite }) => {
   const { id } = useParams();
   const property = propertiesData.properties.find(p => p.id === id);
 
+  const [selectedMainImage, setSelectedMainImage] = useState(property ? property.picture : '');
+  const [currentGalleryIndex, setCurrentGalleryIndex] = useState(0);
+
   const [isViewerOpen, setIsViewerOpen] = useState(false);
-  const [photoIndex, setPhotoIndex] = useState(0);
+
+  useEffect(() => {
+    if (property) {
+      setSelectedMainImage(property.picture);
+      setCurrentGalleryIndex(0);
+    }
+  }, [property?.id]);
 
   if (!property) {
     return <div style={{ padding: '20px', textAlign: 'center' }}><h2>Property not found</h2><Link to="/" className="btn-primary">Back to Search</Link></div>;
@@ -17,18 +26,23 @@ const PropertyPage = ({ favorites, addFavorite, removeFavorite }) => {
 
   const isFav = favorites.some(fav => fav.id === property.id);
 
-  const galleryImages = [property.picture];
-  
+  const fullGalleryImages = [property.picture];
   if (property.images && property.images.length > 0) {
-    galleryImages.push(...property.images);
+    fullGalleryImages.push(...property.images);
+  }
+  if (property.floorplan) {
+    fullGalleryImages.push(property.floorplan);
   }
 
-  if (property.floorplan) {
-    galleryImages.push(property.floorplan);
-  }
+  const thumbnailImages = [property.picture, ...(property.images || [])];
+
+  const handleThumbnailClick = (imgUrl, index) => {
+    setSelectedMainImage(imgUrl);
+    setCurrentGalleryIndex(index);
+  };
 
   const openViewer = (index) => {
-    setPhotoIndex(index);
+    setCurrentGalleryIndex(index); 
     setIsViewerOpen(true);
   };
 
@@ -39,8 +53,8 @@ const PropertyPage = ({ favorites, addFavorite, removeFavorite }) => {
       </Link>
 
       <ImageViewer 
-        images={galleryImages}
-        initialIndex={photoIndex}
+        images={fullGalleryImages}
+        initialIndex={currentGalleryIndex} 
         isOpen={isViewerOpen}
         onClose={() => setIsViewerOpen(false)}
       />
@@ -49,36 +63,41 @@ const PropertyPage = ({ favorites, addFavorite, removeFavorite }) => {
         <div 
           className="image-container" 
           style={{ position: 'relative', cursor: 'pointer', borderRadius: '12px', overflow: 'hidden' }}
-          onClick={() => openViewer(0)}
+          onClick={() => openViewer(currentGalleryIndex)}
         >
-          <img src={property.picture} alt={property.location} style={{ width: '100%', height: '400px', objectFit: 'cover' }} />
+          <img src={selectedMainImage} alt={property.location} style={{ width: '100%', height: '400px', objectFit: 'cover' }} />
           
           <div style={{ position: 'absolute', bottom: '15px', right: '15px', background: 'rgba(0,0,0,0.7)', color: 'white', padding: '8px 15px', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem' }}>
-            <FaSearchPlus /> View Gallery ({galleryImages.length} photos)
+            <FaSearchPlus /> View Fullscreen
           </div>
         </div>
 
-        {property.images && property.images.length > 0 && (
+        {thumbnailImages.length > 1 && (
           <div style={{ display: 'flex', gap: '10px', marginTop: '10px', overflowX: 'auto', paddingBottom: '5px' }}>
-            {property.images.map((img, index) => (
-              <img 
-                key={index}
-                src={img} 
-                alt={`View ${index + 1}`}
-                onClick={() => openViewer(index + 1)}
-                style={{ 
-                  width: '100px', 
-                  height: '70px', 
-                  objectFit: 'cover', 
-                  borderRadius: '6px', 
-                  cursor: 'pointer',
-                  border: '1px solid var(--border-color)',
-                  flexShrink: 0
-                }} 
-                onMouseOver={(e) => e.target.style.opacity = '0.8'}
-                onMouseOut={(e) => e.target.style.opacity = '1'}
-              />
-            ))}
+            {thumbnailImages.map((img, index) => {
+               const isActive = index === currentGalleryIndex;
+               return (
+                <img 
+                  key={index}
+                  src={img} 
+                  alt={`Thumbnail ${index + 1}`}
+                  onClick={() => handleThumbnailClick(img, index)} 
+                  style={{ 
+                    width: '100px', 
+                    height: '70px', 
+                    objectFit: 'cover', 
+                    borderRadius: '6px', 
+                    cursor: 'pointer',
+                    border: isActive ? '3px solid var(--primary-color)' : '1px solid var(--border-color)',
+                    flexShrink: 0,
+                    transition: 'all 0.2s',
+                    opacity: isActive ? '1' : '0.7'
+                  }} 
+                  onMouseOver={(e) => { if(!isActive) e.target.style.opacity = '1'; }}
+                  onMouseOut={(e) =>  { if(!isActive) e.target.style.opacity = '0.7'; }}
+                />
+               );
+            })}
           </div>
         )}
 
@@ -118,7 +137,7 @@ const PropertyPage = ({ favorites, addFavorite, removeFavorite }) => {
               <h3>Floor Plan</h3>
               <div 
                 className="floorplan-container" 
-                onClick={() => openViewer(galleryImages.length - 1)}
+                onClick={() => openViewer(fullGalleryImages.length - 1)}
                 style={{ cursor: 'pointer' }}
               >
                  <img 
@@ -126,9 +145,6 @@ const PropertyPage = ({ favorites, addFavorite, removeFavorite }) => {
                    alt="Floor Plan" 
                    style={{ width: '100%', maxWidth: '600px', border: '1px solid var(--border-color)', borderRadius: '8px' }} 
                  />
-                 <p style={{ textAlign: 'center', color: 'var(--primary-color)', marginTop: '10px', fontSize: '0.9rem', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '5px' }}>
-                    <FaSearchPlus /> Click to enlarge
-                 </p>
               </div>
             </>
           )}
