@@ -411,6 +411,19 @@ body {
   }
 }
 
+.specs {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  background: var(--card-bg);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
 .results-container {
   margin-top: 40px;
   display: grid;

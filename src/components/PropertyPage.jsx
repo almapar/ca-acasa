@@ -162,11 +162,11 @@ const PropertyPage = ({ favorites, addFavorite, removeFavorite }) => {
 
       <div className="property-info-grid">
         <div className="left-col">
-          <div className="specs" style={{ display: 'flex', gap: '20px', padding: '20px', background: 'var(--card-bg)', borderRadius: '12px', border: '1px solid var(--border-color)', marginBottom: '30px' }}>
+        <div className="specs">
             <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><FaBed color="var(--primary-color)"/> <strong>{property.bedrooms}</strong> Bedrooms</span>
             <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><FaRulerCombined color="var(--primary-color)"/> <strong>{property.type}</strong></span>
             <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><FaMapMarkerAlt color="var(--primary-color)"/> {property.location.split(',').pop()}</span>
-          </div>
+        </div>
 
           <h3>Description</h3>
           <p style={{ lineHeight: '1.8', color: 'var(--text-muted)', marginBottom: '40px' }}>
