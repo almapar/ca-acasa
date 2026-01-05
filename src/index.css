@@ -225,9 +225,47 @@ body {
 .search-icon { color: var(--text-muted); }
 
 .menu-icon { display: none; font-size: 1.5rem; color: var(--text-main); cursor: pointer; }
-.nav-menu { display: flex; gap: 30px; }
-.nav-item { text-decoration: none; color: var(--text-muted); font-weight: 600; font-size: 1rem; }
-.nav-item:hover { color: var(--primary-color); }
+.nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-item {
+  text-decoration: none;
+  color: #94a3b8;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.nav-item:hover {
+  color: white;
+}
+
+.nav-btn-contact {
+  background-color: transparent;
+  border: 2px solid var(--primary-color);
+  color: var(--primary-color);
+  padding: 8px 24px;
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+}
+
+.nav-btn-contact:hover {
+  background-color: var(--primary-color);
+  color: white;
+  box-shadow: 0 0 10px rgba(225, 29, 72, 0.4);
+}
+
+@media (max-width: 768px) {
+  .nav-menu {
+      background-color: #1e293b; 
+      border: 1px solid #334155;
+  }
+}
 
 .search-container {
   display: flex;
@@ -355,6 +393,63 @@ body {
   margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-color); 
 }
 .card-actions a { color: var(--primary-color); font-weight: 600; text-decoration: none; }
+
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  position: relative;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  animation: slideUp 0.3s ease-out;
+  
+  width: 90%;
+  max-width: 450px;
+  margin: auto;
+  color: #1e293b !important; 
+}
+
+.modal-content h2 {
+  color: #0f172a !important;
+}
+
+.modal-content p {
+  color: #64748b !important;
+}
+
+.contact-form input, 
+.contact-form textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 1rem;
+  
+  background-color: #f8fafc !important;
+  color: #1e293b !important;
+}
+
+.contact-form input:focus, 
+.contact-form textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  background-color: #ffffff !important;
+}
+
+.contact-form label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #475569 !important;
+}
+
+.modal-close {
+  color: #64748b !important;
+}
+.modal-close:hover {
+  color: #ef4444 !important;
+}
 
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,

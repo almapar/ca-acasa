@@ -3,13 +3,14 @@ import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react
 import SearchPage from './components/SearchPage';
 import PropertyPage from './components/PropertyPage';
 import StarterPage from './components/StarterPage';
+import ContactModal from './components/ContactModal';
 import propertiesData from './data/properties.json';
 import { FaBars, FaTimes, FaSearch } from 'react-icons/fa';
 import './index.css';
 
-
 const Layout = ({ children, searchTerm, setSearchTerm }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isContactOpen, setIsContactOpen] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -18,9 +19,11 @@ const Layout = ({ children, searchTerm, setSearchTerm }) => {
 
   return (
     <div className="App">
+        <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />
+
         <div className="app-container">
             <nav className="navbar">
-              <Link to="/search" className="nav-logo">
+              <Link to="/" className="nav-logo">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.35 21H5a2 2 0 0 1-2-2v-9a2 2 0 0 1 .71-1.53l7-6a2 2 0 0 1 2.58 0l7 6A2 2 0 0 1 21 10v2.35"/><path d="M14.8 12.4A1 1 0 0 0 14 12h-4a1 1 0 0 0-1 1v8"/><path d="M15 18h6"/><path d="M18 15v6"/></svg>
                 <span>ca acasă</span>
               </Link>
@@ -40,9 +43,18 @@ const Layout = ({ children, searchTerm, setSearchTerm }) => {
               </div>
 
               <div className={isMenuOpen ? "nav-menu active" : "nav-menu"}>
+                <Link to="/" className="nav-item">Home</Link>
                 <Link to="/search" className="nav-item">Properties</Link>
+                
+                <button 
+                  className="nav-btn-contact" 
+                  onClick={() => setIsContactOpen(true)}
+                >
+                  Contact
+                </button>
               </div>
             </nav>
+            
             {children}
         </div>
       </div>
@@ -104,7 +116,6 @@ function App() {
               />
           </Layout>
         } />
-
       </Routes>
     </Router>
   );
