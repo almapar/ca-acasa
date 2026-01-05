@@ -193,6 +193,21 @@ body {
   letter-spacing: -0.5px;
 }
 
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  text-decoration: none;
+  color: #94a3b8;
+  font-weight: 600;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.back-link:hover {
+  color: var(--primary-color);
+  transform: translateX(-5px);
+}
 
 .nav-logo svg { 
   color: var(--primary-color);
@@ -239,8 +254,10 @@ body {
 }
 
 .nav-item:hover {
-  color: white;
+  color: var(--primary-hover);
 }
+
+
 
 .nav-btn-contact {
   background-color: transparent;

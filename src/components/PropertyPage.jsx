@@ -64,9 +64,9 @@ const PropertyPage = ({ favorites, addFavorite, removeFavorite }) => {
 
   return (
     <div className="property-page-container" style={{ maxWidth: '1000px', margin: '0 auto', padding: '20px' }}>
-      <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '20px', textDecoration: 'none', color: 'var(--text-muted)', fontWeight: '600' }}>
-        <FaArrowLeft /> Back to Search
-      </Link>
+      <Link to="/" className="back-link">
+  <FaArrowLeft /> Back to Search
+</Link>
 
       <ImageViewer 
         images={fullGalleryImages}
