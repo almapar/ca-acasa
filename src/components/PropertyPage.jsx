@@ -1,147 +1,150 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import 'react-tabs/style/react-tabs.css'; 
 import propertiesData from '../data/properties.json';
-import { FaArrowLeft, FaHeart } from 'react-icons/fa'; 
+import { FaHeart, FaBed, FaMapMarkerAlt, FaArrowLeft, FaRulerCombined, FaSearchPlus } from 'react-icons/fa';
+import ImageViewer from './ImageViewer';
 
-
-const PropertyPage = ({ favorites = [], addFavorite, removeFavorite }) => {
+const PropertyPage = ({ favorites, addFavorite, removeFavorite }) => {
   const { id } = useParams();
   const property = propertiesData.properties.find(p => p.id === id);
 
-  // State for the currently selected main image
-  const [mainImage, setMainImage] = useState('');
-  
-  // State for the list of all images for this property
-  const [images, setImages] = useState([]);
-
-  // Check if this property is already in the favorites list
-  const isFav = favorites?.some(f => f.id === property?.id);
-
-  useEffect(() => {
-    if (property) {
-      setMainImage(property.picture);
-      const imageList = [
-        property.picture,
-        `/images/${property.id}_2.jpg`,
-        `/images/${property.id}_3.jpg`,
-        `/images/${property.id}_4.jpg`,
-        `/images/${property.id}_5.jpg`, 
-        `/images/${property.id}_6.jpg`   
-      ];
-      setImages(imageList);
-    }
-  }, [property]);
+  const [isViewerOpen, setIsViewerOpen] = useState(false);
+  const [photoIndex, setPhotoIndex] = useState(0);
 
   if (!property) {
-    return <div style={{ padding: '20px' }}>Property not found! <Link to="/">Return Home</Link></div>;
+    return <div style={{ padding: '20px', textAlign: 'center' }}><h2>Property not found</h2><Link to="/" className="btn-primary">Back to Search</Link></div>;
   }
 
+  const isFav = favorites.some(fav => fav.id === property.id);
+
+  const galleryImages = [property.picture];
+  
+  if (property.images && property.images.length > 0) {
+    galleryImages.push(...property.images);
+  }
+
+  if (property.floorplan) {
+    galleryImages.push(property.floorplan);
+  }
+
+  const openViewer = (index) => {
+    setPhotoIndex(index);
+    setIsViewerOpen(true);
+  };
+
   return (
-    <div style={{ padding: '20px', maxWidth: '1000px', margin: '0 auto' }}>
-        <Link to="/search" style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '20px', textDecoration: 'none', color: '#333' }}>
-            <FaArrowLeft /> Back to Search
-        </Link>
+    <div className="property-page-container" style={{ maxWidth: '1000px', margin: '0 auto', padding: '20px' }}>
+      <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '20px', textDecoration: 'none', color: 'var(--text-muted)', fontWeight: '600' }}>
+        <FaArrowLeft /> Back to Search
+      </Link>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <div>
-                <h1>{property.location}</h1>
-                <h2 style={{ color: '#007bff' }}>£{property.price.toLocaleString()}</h2>
-            </div>
-            
-            {/* TOGGLE BUTTON LOGIC */}
-            {isFav ? (
-                <button 
-                    onClick={() => removeFavorite(property.id)}
-                    style={{ padding: '10px 15px', background: '#ffe6e6', border: '1px solid red', borderRadius: '5px', cursor: 'pointer', color: 'red', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                    <FaHeart /> Saved
-                </button>
-            ) : (
-                <button 
-                    onClick={() => addFavorite(property.id)}
-                    style={{ padding: '10px 15px', background: 'white', border: '1px solid #ccc', borderRadius: '5px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                    <FaHeart color="#ccc" /> Save
-                </button>
-            )}
+      <ImageViewer 
+        images={galleryImages}
+        initialIndex={photoIndex}
+        isOpen={isViewerOpen}
+        onClose={() => setIsViewerOpen(false)}
+      />
+
+      <div className="property-header" style={{ marginBottom: '30px' }}>
+        <div 
+          className="image-container" 
+          style={{ position: 'relative', cursor: 'pointer', borderRadius: '12px', overflow: 'hidden' }}
+          onClick={() => openViewer(0)}
+        >
+          <img src={property.picture} alt={property.location} style={{ width: '100%', height: '400px', objectFit: 'cover' }} />
+          
+          <div style={{ position: 'absolute', bottom: '15px', right: '15px', background: 'rgba(0,0,0,0.7)', color: 'white', padding: '8px 15px', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem' }}>
+            <FaSearchPlus /> View Gallery ({galleryImages.length} photos)
+          </div>
         </div>
 
-        <div className="gallery-container">
-            <div style={{ marginBottom: '10px' }}>
-                <img 
-                  src={mainImage} 
-                  alt="Main Property View" 
-                  onError={(e) => { e.target.src = '/images/prop1_1.jpg'; }} 
-                  style={{ width: '100%', maxHeight: '500px', objectFit: 'cover', borderRadius: '8px' }} 
-                />
-            </div>
+        {property.images && property.images.length > 0 && (
+          <div style={{ display: 'flex', gap: '10px', marginTop: '10px', overflowX: 'auto', paddingBottom: '5px' }}>
+            {property.images.map((img, index) => (
+              <img 
+                key={index}
+                src={img} 
+                alt={`View ${index + 1}`}
+                onClick={() => openViewer(index + 1)}
+                style={{ 
+                  width: '100px', 
+                  height: '70px', 
+                  objectFit: 'cover', 
+                  borderRadius: '6px', 
+                  cursor: 'pointer',
+                  border: '1px solid var(--border-color)',
+                  flexShrink: 0
+                }} 
+                onMouseOver={(e) => e.target.style.opacity = '0.8'}
+                onMouseOut={(e) => e.target.style.opacity = '1'}
+              />
+            ))}
+          </div>
+        )}
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '10px' }}>
-                {images.map((img, index) => (
-                    <img 
-                        key={index} 
-                        src={img} 
-                        alt={`View ${index + 1}`} 
-                        onClick={() => setMainImage(img)}
-                        onError={(e) => { e.target.style.display = 'none'; }} 
-                        style={{ 
-                            width: '100%', 
-                            height: '80px', 
-                            objectFit: 'cover', 
-                            cursor: 'pointer', 
-                            borderRadius: '4px',
-                            border: mainImage === img ? '2px solid #007bff' : '2px solid transparent',
-                            opacity: mainImage === img ? 1 : 0.7
-                        }} 
-                    />
-                ))}
-            </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginTop: '20px' }}>
+          <div>
+            <h1 style={{ fontSize: '2rem', marginBottom: '10px', color: 'var(--text-main)' }}>{property.location}</h1>
+            <h2 style={{ fontSize: '1.8rem', color: 'var(--primary-color)', margin: '0' }}>£{property.price.toLocaleString()}</h2>
+          </div>
+          
+          {isFav ? (
+             <button onClick={() => removeFavorite(property.id)} className="btn-secondary" style={{ color: '#ef4444', borderColor: '#ef4444' }}>
+               <FaHeart /> Saved
+             </button>
+          ) : (
+             <button onClick={() => addFavorite(property.id)} className="btn-secondary">
+               <FaHeart style={{ color: '#cbd5e1' }} /> Save
+             </button>
+          )}
+        </div>
+      </div>
+
+      <div className="property-info-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '40px' }}>
+        <div className="left-col">
+          <div className="specs" style={{ display: 'flex', gap: '20px', padding: '20px', background: 'var(--card-bg)', borderRadius: '12px', border: '1px solid var(--border-color)', marginBottom: '30px' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><FaBed color="var(--primary-color)"/> <strong>{property.bedrooms}</strong> Bedrooms</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><FaRulerCombined color="var(--primary-color)"/> <strong>{property.type}</strong></span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><FaMapMarkerAlt color="var(--primary-color)"/> {property.location.split(',').pop()}</span>
+          </div>
+
+          <h3>Description</h3>
+          <p style={{ lineHeight: '1.8', color: 'var(--text-muted)', marginBottom: '40px' }}>
+            {property.description}
+          </p>
+          
+          {property.floorplan && (
+            <>
+              <h3>Floor Plan</h3>
+              <div 
+                className="floorplan-container" 
+                onClick={() => openViewer(galleryImages.length - 1)}
+                style={{ cursor: 'pointer' }}
+              >
+                 <img 
+                   src={property.floorplan} 
+                   alt="Floor Plan" 
+                   style={{ width: '100%', maxWidth: '600px', border: '1px solid var(--border-color)', borderRadius: '8px' }} 
+                 />
+                 <p style={{ textAlign: 'center', color: 'var(--primary-color)', marginTop: '10px', fontSize: '0.9rem', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '5px' }}>
+                    <FaSearchPlus /> Click to enlarge
+                 </p>
+              </div>
+            </>
+          )}
         </div>
 
-        <div style={{ marginTop: '30px' }}>
-            <Tabs>
-                <TabList>
-                    <Tab>Description</Tab>
-                    <Tab>Floor Plan</Tab>
-                    <Tab>Google Map</Tab>
-                </TabList>
-
-                <TabPanel>
-                    <div style={{ padding: '20px', background: '#f9f9f9', borderRadius: '5px' }}>
-                        <h3>Property Description</h3>
-                        <p>{property.description}</p>
-                        <p><strong>Type:</strong> {property.type}</p>
-                        <p><strong>Tenure:</strong> {property.tenure}</p>
-                        <p><strong>Bedrooms:</strong> {property.bedrooms}</p>
-                        <p><strong>Date Added:</strong> {property.added.day} {property.added.month} {property.added.year}</p>
-                    </div>
-                </TabPanel>
-
-                <TabPanel>
-                <div className="floorplan-container">
-                    <img 
-                        src={property.floorplan} 
-                        alt="Floor Plan" 
-                        style={{ width: '100%', maxWidth: '600px', borderRadius: '8px' }}
-                    />
-                </div>
-                </TabPanel>
-
-                <TabPanel>
-                    <div style={{ padding: '20px', background: '#f9f9f9' }}>
-                        <iframe 
-                            width="100%" 
-                            height="350" 
-                            style={{ border: 0 }}
-                            loading="lazy"
-                            allowFullScreen
-                            title="Property Map"
-                            src={`https://maps.google.com/maps?q=${property.location}&t=&z=13&ie=UTF8&iwloc=&output=embed`}>
-                        </iframe>
-                    </div>
-                </TabPanel>
-            </Tabs>
+        <div className="right-col">
+          <div className="agent-card" style={{ padding: '25px', background: 'var(--card-bg)', borderRadius: '12px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-md)', position: 'sticky', top: '20px' }}>
+            <h3>Interested?</h3>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '20px' }}>
+              Contact our estate agents today to book a viewing for this property.
+            </p>
+            <button className="btn-primary" style={{ width: '100%', justifyContent: 'center' }}>Book Viewing</button>
+            <button className="btn-secondary" style={{ width: '100%', justifyContent: 'center', marginTop: '10px' }}>Call Agent</button>
+          </div>
         </div>
+      </div>
     </div>
   );
 };

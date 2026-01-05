@@ -10,7 +10,16 @@
             "location": "Petts Wood Road, Petts Wood, Orpington BR5",
             "picture": "/images/prop1.jpg",
             "floorplan": "/floorplans/prop1-floorplan.jpg",
-            "added": { "month": "October", "day": 12, "year": 2022 }
+            "added": { "month": "October", "day": 12, "year": 2022 },
+            "images": [
+                "/images/prop1.jpg",
+                "/images/prop1_1.jpg",
+                "/images/prop1_2.jpg",
+                "/images/prop1_3.jpg",
+                "/images/prop1_4.jpg",
+                "/images/prop1_5.jpg",
+                "/images/prop1_6.jpg"
+            ]
         },
         {
             "id": "prop2",
@@ -22,7 +31,16 @@
             "location": "Crofton Road Orpington BR6",
             "picture": "/images/prop2.jpg",
             "floorplan": "/floorplans/prop2-floorplan.jpg",
-            "added": { "month": "September", "day": 14, "year": 2022 }
+            "added": { "month": "September", "day": 14, "year": 2022 },
+            "images": [
+                "/images/prop2.jpg",
+                "/images/prop2_1.jpg",
+                "/images/prop2_2.jpg",
+                "/images/prop2_3.jpg",
+                "/images/prop2_4.jpg",
+                "/images/prop2_5.jpg",
+                "/images/prop2_6.jpg"
+            ]
         },
         {
             "id": "prop3",
@@ -34,7 +52,16 @@
             "location": "Station Road, Bromley BR1",
             "picture": "/images/prop3.jpg",
             "floorplan": "/floorplans/prop3-floorplan.jpg",
-            "added": { "month": "January", "day": 10, "year": 2023 }
+            "added": { "month": "January", "day": 10, "year": 2023 },
+            "images": [
+                "/images/prop3.jpg",
+                "/images/prop3_1.jpg",
+                "/images/prop3_2.jpg",
+                "/images/prop3_3.jpg",
+                "/images/prop3_4.jpg",
+                "/images/prop3_5.jpg",
+                "/images/prop3_6.jpg"
+            ]
         },
         {
             "id": "prop4",
@@ -46,7 +73,16 @@
             "location": "High Street, Penge SE20",
             "picture": "/images/prop4.jpg",
             "floorplan": "/floorplans/prop4-floorplan.jpg",
-            "added": { "month": "March", "day": 5, "year": 2023 }
+            "added": { "month": "March", "day": 5, "year": 2023 },
+            "images": [
+                "/images/prop4.jpg",
+                "/images/prop4_1.jpg",
+                "/images/prop4_2.jpg",
+                "/images/prop4_3.jpg",
+                "/images/prop4_4.jpg",
+                "/images/prop4_5.jpg",
+                "/images/prop4_6.jpg"
+            ]
         },
         {
             "id": "prop5",
@@ -58,7 +94,16 @@
             "location": "Chislehurst Road, Chislehurst BR7",
             "picture": "/images/prop5.jpg",
             "floorplan": "/floorplans/prop5-floorplan.jpg",
-            "added": { "month": "November", "day": 20, "year": 2022 }
+            "added": { "month": "November", "day": 20, "year": 2022 },
+            "images": [
+                "/images/prop5.jpg",
+                "/images/prop5_1.jpg",
+                "/images/prop5_2.jpg",
+                "/images/prop5_3.jpg",
+                "/images/prop5_4.jpg",
+                "/images/prop5_5.jpg",
+                "/images/prop5_6.jpg"
+            ]
         },
         {
             "id": "prop6",
@@ -70,7 +115,16 @@
             "location": "Widmore Road, Bromley BR1",
             "picture": "/images/prop6.jpg",
             "floorplan": "/floorplans/prop6-floorplan.jpg",
-            "added": { "month": "December", "day": 1, "year": 2022 }
+            "added": { "month": "December", "day": 1, "year": 2022 },
+            "images": [
+                "/images/prop6.jpg",
+                "/images/prop6_1.jpg",
+                "/images/prop6_2.jpg",
+                "/images/prop6_3.jpg",
+                "/images/prop6_4.jpg",
+                "/images/prop6_5.jpg",
+                "/images/prop6_6.jpg"
+            ]
         },
         {
             "id": "prop7",
@@ -82,7 +136,16 @@
             "location": "Hayes Lane, Beckenham BR3",
             "picture": "/images/prop7.jpg",
             "floorplan": "/floorplans/prop7-floorplan.jpg",
-            "added": { "month": "February", "day": 14, "year": 2023 }
+            "added": { "month": "February", "day": 14, "year": 2023 },
+            "images": [
+                "/images/prop7.jpg",
+                "/images/prop7_1.jpg",
+                "/images/prop7_2.jpg",
+                "/images/prop7_3.jpg",
+                "/images/prop7_4.jpg",
+                "/images/prop7_5.jpg",
+                "/images/prop7_6.jpg"
+      ]     
         }
     ]
 }
