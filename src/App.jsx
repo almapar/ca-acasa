@@ -5,7 +5,7 @@ import PropertyPage from './components/PropertyPage';
 import StarterPage from './components/StarterPage';
 import ContactModal from './components/ContactModal';
 import propertiesData from './data/properties.json';
-import { FaBars, FaTimes, FaSearch } from 'react-icons/fa';
+import { FaSearch, FaTimes } from 'react-icons/fa';
 import './index.css';
 
 const Layout = ({ children, searchTerm, setSearchTerm }) => {
@@ -38,8 +38,13 @@ const Layout = ({ children, searchTerm, setSearchTerm }) => {
                  />
               </div>
 
-              <div className="menu-icon" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-                 {isMenuOpen ? <FaTimes /> : <FaBars />}
+              <div 
+                className={`menu-icon-animated ${isMenuOpen ? 'open' : ''}`} 
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+              >
+                <span></span>
+                <span></span>
+                <span></span>
               </div>
 
               <div className={isMenuOpen ? "nav-menu active" : "nav-menu"}>
